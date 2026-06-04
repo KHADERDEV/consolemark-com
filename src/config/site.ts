@@ -6,8 +6,8 @@ export const siteConfig = {
     home: "/",
     about: "/about-us",
     blogs: "/blogs",
-    rent: "/rent",
-    buy: "/buy",
+    rent: "/rent-marketplace",
+    buy: "/buy-marketplace",
     sell: "/sell",
     privacyPolicy: "/privacy-policy",
     termsOfService: "/terms-of-service",
@@ -25,8 +25,8 @@ export const siteConfig = {
       {
         title: "Console Services",
         links: [
-          { label: "Rent", href: "/rent" },
-          { label: "Buy", href: "/buy" },
+          { label: "Rent", href: "/rent-marketplace" },
+          { label: "Buy", href: "/buy-marketplace" },
           { label: "Sell", href: "/sell" },
         ],
       },
@@ -56,6 +56,37 @@ export const siteConfig = {
       },
     ],
   },
+  rentServices: {
+    title: "ConsoleMark® Rent Services",
+    items: [
+      {
+        text: "Do you want to rent a Console to publish your apps and games?",
+        image:
+          "https://res.cloudinary.com/destej60y/image/upload/v1780609175/ConsoleMark-Publish-Image-n1_yy7h3z.png",
+        imageAlt: "Publishing apps and games with Console Mark",
+        imageSide: "right",
+      },
+      {
+        text: "Do you have a Play Console and want to rent it for others?",
+        image:
+          "https://res.cloudinary.com/destej60y/image/upload/v1780608776/ConsoleMark-Rent-Image-n1_u6c2yd.png",
+        imageAlt: "Renting a Play Console through Console Mark",
+        imageSide: "left",
+      },
+      {
+        text: "Do you want to publish your app, then transfer it into your console?",
+        image:
+          "https://res.cloudinary.com/destej60y/image/upload/v1780609274/ConsoleMark-Transfer-Image-n1_tygefu.png",
+        imageAlt: "Transferring a published app to your console",
+        imageSide: "right",
+      },
+    ],
+  },
+  marketplaceCta: {
+    text: "Console Rental Marketplace",
+    buttonLabel: "Go to Marketplace",
+    href: "/rent-marketplace",
+  },
   assets: {
     logo: "/consolemark-logo-00e5ff.png",
     heroBackground:
@@ -68,5 +99,7 @@ export const siteConfig = {
       "https://res.cloudinary.com/destej60y/image/upload/v1780607131/communication_k52rdw.png",
     whatsappIcon:
       "https://res.cloudinary.com/destej60y/image/upload/v1780607052/whatsapp_hc5fmg.png",
+    ctaArrow:
+      "https://res.cloudinary.com/destej60y/image/upload/v1780609905/next_oaeslq.png",
   },
 };

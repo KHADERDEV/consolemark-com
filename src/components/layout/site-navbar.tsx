@@ -54,6 +54,7 @@ export function SiteNavbar() {
             width={44}
             height={44}
             priority
+            draggable={false}
             className="h-8 w-8 shrink-0 object-contain sm:h-11 sm:w-11"
           />
           <span className="font-lilita whitespace-nowrap text-lg tracking-normal sm:text-2xl">

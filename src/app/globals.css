@@ -131,4 +131,8 @@
     scroll-behavior: smooth;
     overflow-x: clip;
   }
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
 }

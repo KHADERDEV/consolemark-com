@@ -43,6 +43,7 @@ export function SiteFooter() {
                 alt={`${siteConfig.name} logo`}
                 width={48}
                 height={48}
+                draggable={false}
                 className="h-10 w-10 object-contain sm:h-12 sm:w-12"
               />
               <span className="font-lilita text-2xl tracking-normal sm:text-3xl">
@@ -106,6 +107,7 @@ export function SiteFooter() {
                   alt=""
                   width={24}
                   height={24}
+                  draggable={false}
                   className="h-6 w-6 object-contain transition-[filter] group-hover:brightness-0"
                 />
               </a>

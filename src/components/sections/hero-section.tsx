@@ -21,7 +21,7 @@ export function HeroSection() {
       </div>
 
       <a
-        href="#after-hero"
+        href="#rent-services"
         aria-label="Scroll down"
         className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 transition-transform duration-200 hover:translate-y-1 sm:bottom-9"
       >
@@ -30,6 +30,7 @@ export function HeroSection() {
           alt="Scroll down"
           width={72}
           height={72}
+          draggable={false}
           className="h-16 w-16 object-contain sm:h-[72px] sm:w-[72px]"
         />
       </a>
