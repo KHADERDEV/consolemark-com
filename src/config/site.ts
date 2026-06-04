@@ -13,7 +13,7 @@ export const siteConfig = {
     termsOfService: "/terms-of-service",
     deleteMyAccount: "/delete-my-account",
     support: "/support",
-    youtube: "https://www.youtube.com/",
+    youtube: "https://www.youtube.com/@ConsoleMark-com",
     telegram: "https://telegram.org/",
     whatsapp: "https://www.whatsapp.com/",
   },
