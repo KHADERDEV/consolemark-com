@@ -21,6 +21,10 @@ export const siteConfig = {
     copyright: "© 2026 Console Mark. All rights reserved.",
     address:
       "ConsoleMark.com. 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom.",
+    whatsapp: {
+      phone: "+447520603830",
+      qrLink: "https://wa.me/qr/R7R262ZNSCZHL1",
+    },
     columns: [
       {
         title: "Console Services",
@@ -35,7 +39,7 @@ export const siteConfig = {
         links: [
           // { label: "Home", href: "/" },
           { label: "About Us", href: "/about-us" },
-          { label: "Contact Support", href: "/support" },
+          { label: "Contact Us", href: "/support" },
           { label: "Blogs", href: "/blogs" },
         ],
       },

@@ -1,31 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { FooterSocialLinks } from "@/components/layout/footer-social-links";
 import { siteConfig } from "@/config/site";
-
-type SocialLink = {
-  label: string;
-  href: string;
-  image: string;
-};
-
-const socialLinks: SocialLink[] = [
-  {
-    label: "Youtube",
-    href: siteConfig.links.youtube,
-    image: siteConfig.assets.youtubeIcon,
-  },
-  {
-    label: "Telegram",
-    href: siteConfig.links.telegram,
-    image: siteConfig.assets.telegramIcon,
-  },
-  {
-    label: "WhatsApp",
-    href: siteConfig.links.whatsapp,
-    image: siteConfig.assets.whatsappIcon,
-  },
-];
 
 export function SiteFooter() {
   return (
@@ -92,27 +69,7 @@ export function SiteFooter() {
             {siteConfig.footer.copyright}
           </p>
 
-          <div className="flex items-center gap-3">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={social.label}
-                className="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:border-[#00e5ff] hover:bg-[#00e5ff]"
-              >
-                <Image
-                  src={social.image}
-                  alt=""
-                  width={24}
-                  height={24}
-                  draggable={false}
-                  className="h-6 w-6 object-contain transition-[filter] group-hover:brightness-0"
-                />
-              </a>
-            ))}
-          </div>
+          <FooterSocialLinks />
         </div>
 
         <p className="font-lilita text-center text-sm leading-6 tracking-normal text-white sm:text-base">
