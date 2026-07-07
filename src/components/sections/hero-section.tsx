@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { siteConfig } from "@/config/site";
 
@@ -18,6 +19,12 @@ export function HeroSection() {
         <p className="font-lilita mt-4 whitespace-nowrap leading-none tracking-normal text-[clamp(1rem,5.4vw,5.4rem)] sm:mt-7">
           {siteConfig.subTagline}
         </p>
+        <Link
+          href={siteConfig.marketplaceCta.href}
+          className="font-lilita mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-black px-7 text-base tracking-normal text-white transition hover:bg-black/85 sm:mt-10 sm:min-h-14 sm:px-9 sm:text-xl"
+        >
+          {siteConfig.marketplaceCta.buttonLabel}
+        </Link>
       </div>
 
       <a

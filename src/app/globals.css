@@ -127,7 +127,7 @@
     overflow-x: clip;
   }
   html {
-    @apply font-sans;
+    @apply font-lilita;
     scroll-behavior: smooth;
     overflow-x: clip;
   }

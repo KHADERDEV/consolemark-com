@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Console Mark",
-  tagline: "The trusted marketplace for Play Console Publishers.",
+  tagline: "The trusted marketplace for Publishers.",
   subTagline: "Rent, Buy and Sell Consoles",
   links: {
     home: "/",
@@ -64,21 +64,21 @@ export const siteConfig = {
     title: "ConsoleMark® Rent Services",
     items: [
       {
-        text: "Do you want to rent a Console to publish your apps and games?",
+        text: "Publish your Apps and Games",
         image:
           "https://res.cloudinary.com/destej60y/image/upload/v1780609175/ConsoleMark-Publish-Image-n1_yy7h3z.png",
         imageAlt: "Publishing apps and games with Console Mark",
         imageSide: "right",
       },
       {
-        text: "Do you have a Play Console and want to rent it for others?",
+        text: "Rent your Play Console for other Publishers",
         image:
           "https://res.cloudinary.com/destej60y/image/upload/v1780608776/ConsoleMark-Rent-Image-n1_u6c2yd.png",
         imageAlt: "Renting a Play Console through Console Mark",
         imageSide: "left",
       },
       {
-        text: "Do you want to publish your app, then transfer it into your console?",
+        text: "Publish your app, then Transfer it into your console",
         image:
           "https://res.cloudinary.com/destej60y/image/upload/v1780609274/ConsoleMark-Transfer-Image-n1_tygefu.png",
         imageAlt: "Transferring a published app to your console",
