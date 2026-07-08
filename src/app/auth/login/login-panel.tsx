@@ -1,5 +1,6 @@
 "use client";
 
+import { type CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -13,27 +14,52 @@ export function LoginPanel() {
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
   const [isPending, setIsPending] = useState(false);
 
   const siteUrl = typeof window === "undefined" ? "" : window.location.origin;
   const nextPath = searchParams.get("next") ?? "/";
+  const initialMessage =
+    searchParams.get("error") === "google"
+      ? "Google login failed. Please try again or use email and password."
+      : "";
+  const [message, setMessage] = useState(initialMessage);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const googleLoginUri = `${siteUrl}/auth/google/callback`;
 
-  async function signInWithGoogle() {
+  async function signInWithGoogle(credentialResponse: CredentialResponse) {
     setIsPending(true);
     setMessage("");
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const idToken = credentialResponse.credential;
+
+    if (!idToken) {
+      const errorMessage = "Google login did not return an ID token.";
+      console.error(errorMessage);
+      setMessage(errorMessage);
+      setIsPending(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithIdToken({
       provider: "google",
-      options: {
-        redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`,
-      },
+      token: idToken,
     });
 
     if (error) {
+      console.error("Supabase Google ID-token login failed:", error);
       setMessage(error.message);
       setIsPending(false);
+      return;
     }
+
+    window.location.href = nextPath;
+  }
+
+  function handleGoogleLoginError() {
+    const errorMessage = "Google login failed before Supabase authentication.";
+    console.error(errorMessage);
+    setMessage(errorMessage);
+    setIsPending(false);
   }
 
   async function submitEmailPassword(event: React.FormEvent<HTMLFormElement>) {
@@ -85,14 +111,30 @@ export function LoginPanel() {
         Sign in to manage rentals and link your account providers.
       </p>
 
-      <button
-        type="button"
-        onClick={signInWithGoogle}
-        disabled={isPending}
-        className="mt-8 flex min-h-12 w-full items-center justify-center rounded-full bg-black px-6 text-white transition hover:bg-[#55d3e8] hover:text-black disabled:opacity-60"
+      <div
+        className={`mt-8 flex min-h-12 w-full items-center justify-center overflow-hidden rounded-full ${
+          isPending ? "pointer-events-none opacity-60" : ""
+        }`}
       >
-        Continue with Google
-      </button>
+        {googleClientId ? (
+          <GoogleLogin
+            login_uri={googleLoginUri}
+            onSuccess={signInWithGoogle}
+            onError={handleGoogleLoginError}
+            shape="pill"
+            size="large"
+            state={nextPath}
+            text="continue_with"
+            theme="filled_black"
+            ux_mode="redirect"
+            width="384"
+          />
+        ) : (
+          <p className="rounded-[20px] bg-[#ff2780]/10 px-4 py-3 text-center text-sm text-[#b8004e]">
+            Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID.
+          </p>
+        )}
+      </div>
 
       <div className="my-6 flex items-center gap-3 text-xs text-black/45">
         <span className="h-px flex-1 bg-black/10" />

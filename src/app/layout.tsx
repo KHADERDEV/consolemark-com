@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lilita_One } from "next/font/google";
+import { AppGoogleOAuthProvider } from "@/components/auth/google-oauth-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,7 +35,9 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${lilitaOne.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AppGoogleOAuthProvider>{children}</AppGoogleOAuthProvider>
+      </body>
     </html>
   );
 }
