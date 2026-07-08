@@ -167,7 +167,7 @@ export function FooterSocialLinks() {
               <button
                 type="button"
                 onClick={() => setIsWhatsAppOpen(false)}
-                className="font-lilita min-h-12 rounded-full bg-black px-6 py-3 text-base tracking-normal text-white transition hover:bg-[#00e5ff] hover:text-black"
+                className="font-lilita inline-flex min-h-12 justify-self-center rounded-full bg-black px-6 py-3 text-base tracking-normal text-white transition hover:bg-[#00e5ff] hover:text-black"
               >
                 Close
               </button>
