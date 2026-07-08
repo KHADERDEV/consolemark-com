@@ -22,6 +22,7 @@ export async function POST(
   const formData = await request.formData();
   const parsed = adminRentRequestSchema.safeParse({
     status: formData.get("status"),
+    app_status: formData.get("app_status"),
     admin_note: formData.get("admin_note"),
   });
 

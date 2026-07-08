@@ -65,12 +65,14 @@ export default async function ProfilePage() {
     <main className="min-h-screen bg-white text-black">
       <SiteNavbar stable />
       <section className="mx-auto w-full max-w-4xl px-4 pt-36 pb-16 sm:px-6 lg:px-8">
-        <h1 className="text-5xl leading-none">Profile</h1>
+        <h1 className="text-4xl leading-none sm:text-5xl">Profile</h1>
         <ProfileEditor
           email={user.email}
           initialDisplayName={displayName}
           initialWhatsappNumber={profile?.whatsapp_number}
           avatarUrl={avatarUrl}
+          isTrusted={profile?.is_trusted ?? false}
+          isBlocked={profile?.is_blocked ?? false}
         />
 
         <div className="mt-6 rounded-[28px] border border-black/10 bg-neutral-50 p-6">

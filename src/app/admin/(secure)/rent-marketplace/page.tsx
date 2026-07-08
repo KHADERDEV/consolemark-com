@@ -2,9 +2,11 @@ import { ChevronDown } from "lucide-react";
 
 import { DeleteListingButton } from "@/app/admin/(secure)/rent-marketplace/delete-listing-button";
 import { ListingForm } from "@/app/admin/(secure)/rent-marketplace/listing-form";
+import { PagePagination } from "@/components/ui/page-pagination";
+import { getPageValue } from "@/lib/pagination";
 import {
   formatMoney,
-  getAllRentConsoles,
+  getAllRentConsolesPage,
   getAvailabilityLabel,
   getConsoleTypeLabel,
 } from "@/lib/rent-consoles";
@@ -13,21 +15,26 @@ export const metadata = {
   title: "Rent Marketplace | Console Mark Admin",
 };
 
+const PAGE_SIZE = 10;
+
 export default async function AdminRentMarketplacePage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const [params, consoles] = await Promise.all([
-    searchParams,
-    getAllRentConsoles(),
-  ]);
+  const params = await searchParams;
+  const page = getPageValue(params.page);
+  const consolePage = await getAllRentConsolesPage({
+    page,
+    pageSize: PAGE_SIZE,
+  });
+  const consoles = consolePage.items;
 
   return (
     <div className="mx-auto w-full max-w-6xl">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="font-lilita text-4xl sm:text-5xl">Rent Marketplace</p>
+          <p className="font-lilita text-3xl sm:text-5xl">Rent Marketplace</p>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-black/60">
             Create, edit, publish, and remove Play Console rental listings.
             These records power the public marketplace.
@@ -154,6 +161,14 @@ export default async function AdminRentMarketplacePage({
             </div>
           </details>
         ))}
+        <PagePagination
+          ariaLabel="Admin rent marketplace pagination"
+          basePath="/admin/rent-marketplace"
+          currentPage={consolePage.page}
+          hasNextPage={consolePage.hasNextPage}
+          hasPreviousPage={consolePage.hasPreviousPage}
+          searchParams={params}
+        />
       </div>
     </div>
   );

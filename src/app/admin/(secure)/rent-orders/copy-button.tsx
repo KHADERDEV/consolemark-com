@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Copy } from "lucide-react";
+import type React from "react";
 import { useState } from "react";
 
 type CopyButtonProps = {
@@ -11,7 +12,9 @@ type CopyButtonProps = {
 export function CopyButton({ value, label }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  async function copyValue() {
+  async function copyValue(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
     await navigator.clipboard.writeText(value);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);

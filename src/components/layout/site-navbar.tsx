@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: siteConfig.links.rent, label: "Marketplace" },
+  { href: siteConfig.links.payment, label: "Payment" },
   { href: siteConfig.links.support, label: "Support" },
 ];
 
@@ -168,7 +169,7 @@ export function SiteNavbar({
             : "bg-transparent",
       )}
     >
-      <nav className="mx-auto flex w-full max-w-7xl flex-col items-center gap-2 px-4 py-4 text-black sm:h-20 sm:flex-row sm:justify-between sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
+      <nav className="mx-auto flex w-full max-w-7xl flex-col items-center gap-3 px-3 py-3 text-black sm:h-20 sm:flex-row sm:justify-between sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
         <Link
           href={siteConfig.links.home}
           aria-label={`${siteConfig.name} home`}
@@ -188,7 +189,7 @@ export function SiteNavbar({
           </span>
         </Link>
 
-        <div className="flex w-full shrink-0 items-center justify-center gap-2 sm:w-auto sm:gap-6">
+        <div className="flex w-full min-w-0 shrink-0 flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-nowrap sm:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -220,7 +221,7 @@ export function SiteNavbar({
                 <ChevronDown className="h-4 w-4" aria-hidden="true" />
               </button>
               {isMenuOpen ? (
-                <div className="absolute right-0 mt-3 w-64 rounded-[24px] border border-black/10 bg-white p-3 text-black shadow-xl">
+                <div className="absolute right-0 mt-3 w-[min(16rem,calc(100vw-2rem))] rounded-[24px] border border-black/10 bg-white p-3 text-black shadow-xl">
                   <div className="border-black/10 border-b px-3 py-3">
                     <p className="truncate text-sm">{user.name ?? "Profile"}</p>
                     <p className="truncate text-xs text-black/50">
@@ -240,6 +241,13 @@ export function SiteNavbar({
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Rentals
+                  </Link>
+                  <Link
+                    href="/my-transfers"
+                    className="block rounded-full px-4 py-3 text-sm hover:bg-black/5"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    My Transfers
                   </Link>
                   <button
                     type="button"

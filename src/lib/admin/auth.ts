@@ -39,6 +39,9 @@ export type AdminSessionUser = {
   email: string;
 };
 
+const ADMIN_LOGIN_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const ADMIN_LOGIN_RATE_LIMIT_MAX_FAILURES = 10;
+
 function getClientIp(headerList: Headers) {
   const forwardedFor = headerList.get("x-forwarded-for");
   const firstForwardedIp = forwardedFor?.split(",")[0]?.trim();
@@ -58,10 +61,87 @@ async function getAdminUserByEmail(email: string) {
   return rows[0] ?? null;
 }
 
+async function getRecentFailedLoginCount(
+  email: string,
+  ipAddress: string | null,
+) {
+  const since = new Date(
+    Date.now() - ADMIN_LOGIN_RATE_LIMIT_WINDOW_MS,
+  ).toISOString();
+  const query: Record<string, string> = {
+    select: "id",
+    event_type: "eq.admin_login_failed",
+    created_at: `gt.${since}`,
+    limit: String(ADMIN_LOGIN_RATE_LIMIT_MAX_FAILURES),
+  };
+
+  if (ipAddress) {
+    query.ip_address = `eq.${ipAddress}`;
+  } else {
+    query["metadata->>email"] = `eq.${email}`;
+  }
+
+  const rows = await supabaseRest<Array<{ id: string }>>("admin_audit_events", {
+    query,
+  });
+
+  return rows.length;
+}
+
+async function recordAdminAuditEvent(input: {
+  adminUserId?: string | null;
+  eventType: "admin_login_failed" | "admin_login_success";
+  email: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  reason?: string;
+}) {
+  await supabaseRest("admin_audit_events", {
+    method: "POST",
+    prefer: "return=minimal",
+    body: {
+      admin_user_id: input.adminUserId ?? null,
+      event_type: input.eventType,
+      ip_address: input.ipAddress,
+      user_agent: input.userAgent,
+      metadata: {
+        email: input.email,
+        ...(input.reason ? { reason: input.reason } : {}),
+      },
+    },
+  });
+}
+
 export async function loginAdmin(email: string, password: string) {
   const normalizedEmail = email.trim().toLowerCase();
+  const headerList = await headers();
+  const ipAddress = getClientIp(headerList);
+  const userAgent = headerList.get("user-agent");
+
+  if (
+    (await getRecentFailedLoginCount(normalizedEmail, ipAddress)) >=
+    ADMIN_LOGIN_RATE_LIMIT_MAX_FAILURES
+  ) {
+    await recordAdminAuditEvent({
+      eventType: "admin_login_failed",
+      email: normalizedEmail,
+      ipAddress,
+      userAgent,
+      reason: "rate_limited",
+    });
+
+    return { ok: false };
+  }
 
   if (normalizedEmail !== ADMIN_EMAIL) {
+    await recordAdminAuditEvent({
+      eventType: "admin_login_failed",
+      email: normalizedEmail,
+      ipAddress,
+      userAgent,
+      reason: "wrong_email",
+    });
+
     return { ok: false };
   }
 
@@ -71,10 +151,18 @@ export async function loginAdmin(email: string, password: string) {
     !adminUser?.is_active ||
     !verifyPassword(password, adminUser.password_salt, adminUser.password_hash)
   ) {
+    await recordAdminAuditEvent({
+      adminUserId: adminUser?.id,
+      eventType: "admin_login_failed",
+      email: normalizedEmail,
+      ipAddress,
+      userAgent,
+      reason: adminUser?.is_active ? "bad_password" : "inactive_or_missing",
+    });
+
     return { ok: false };
   }
 
-  const headerList = await headers();
   const sessionToken = createSessionToken();
   const tokenHash = hashSessionToken(sessionToken);
   const expiresAt = new Date(
@@ -87,10 +175,18 @@ export async function loginAdmin(email: string, password: string) {
     body: {
       admin_user_id: adminUser.id,
       token_hash: tokenHash,
-      user_agent: headerList.get("user-agent"),
-      ip_address: getClientIp(headerList),
+      user_agent: userAgent,
+      ip_address: ipAddress,
       expires_at: expiresAt.toISOString(),
     },
+  });
+
+  await recordAdminAuditEvent({
+    adminUserId: adminUser.id,
+    eventType: "admin_login_success",
+    email: normalizedEmail,
+    ipAddress,
+    userAgent,
   });
 
   await supabaseRest("admin_users", {

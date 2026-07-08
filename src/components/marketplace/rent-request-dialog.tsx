@@ -13,6 +13,9 @@ type RentRequestDialogProps = {
 
 type SubmissionState = "idle" | "pending" | "success" | "error";
 
+const fieldClassName =
+  "h-12 rounded-full border border-black/15 px-5 outline-none transition focus:border-black";
+
 export function RentRequestDialog({
   rentConsoleId,
   consoleName,
@@ -124,90 +127,90 @@ export function RentRequestDialog({
                   value={rentConsoleId}
                 />
 
-                <div className="grid min-h-0 flex-1 overscroll-contain overflow-y-auto px-6 py-5">
-                  <label className="grid gap-2">
-                    <span>App name</span>
-                    <span className="text-sm text-black/50">
-                      This is how your app will appear on Google Play
-                    </span>
-                    <input
-                      name="app_name"
-                      required
-                      maxLength={30}
-                      className="h-12 rounded-full border border-black/15 px-5 outline-none focus:border-black"
-                    />
-                  </label>
-
-                  <label className="grid gap-2">
-                    <span>Package name</span>
-                    <input
-                      name="package_name"
-                      required
-                      className="h-12 rounded-full border border-black/15 px-5 outline-none focus:border-black"
-                      placeholder="com.example.app"
-                    />
-                  </label>
-
-                  <RadioGroup
-                    title="App or game"
-                    name="submission_type"
-                    options={[
-                      { label: "App", value: "app" },
-                      { label: "Game", value: "game" },
-                    ]}
-                  />
-
-                  <RadioGroup
-                    title="Free or paid"
-                    name="pricing_type"
-                    options={[
-                      { label: "Free", value: "free" },
-                      { label: "Paid", value: "paid" },
-                    ]}
-                  />
-
-                  <label className="grid gap-2">
-                    <span>Gmail</span>
-                    <span className="text-sm text-black/50">
-                      This is for you to get Full Draft Access and Permissions
-                      on your app/game
-                    </span>
-                    <input
-                      name="gmail"
-                      type="email"
-                      required
-                      pattern="^[^@\s]+@gmail\.com$"
-                      className="h-12 rounded-full border border-black/15 px-5 outline-none focus:border-black"
-                      placeholder="name@gmail.com"
-                    />
-                  </label>
-
-                  <div className="rounded-[22px] bg-neutral-50 p-4 text-sm text-black/65">
-                    Do you want us to publish your app/game for you? Please
-                    contact{" "}
-                    <a
-                      className="text-black underline"
-                      href="mailto:rent@consolemark.com"
+                <div className="grid min-h-0 flex-1 gap-5 overscroll-contain overflow-y-auto bg-neutral-50 px-6 py-5">
+                  <section className="grid gap-5 rounded-[22px] bg-white p-5">
+                    <FieldLabel
+                      title="App name"
+                      description="This is how your app will appear on Google Play"
                     >
-                      rent@consolemark.com
-                    </a>
-                    .
-                  </div>
+                      <input
+                        name="app_name"
+                        required
+                        maxLength={30}
+                        className={fieldClassName}
+                      />
+                    </FieldLabel>
 
-                  <label className="grid gap-2">
-                    <span>WhatsApp number</span>
-                    <span className="text-sm text-black/50">
-                      In order to contact you
-                    </span>
-                    <input
-                      name="whatsapp_number"
-                      required
-                      pattern="^\+[1-9]\d{7,18}$"
-                      defaultValue={initialWhatsappNumber ?? ""}
-                      className="h-12 rounded-full border border-black/15 px-5 outline-none focus:border-black"
-                      placeholder="+447520603830"
+                    <FieldLabel title="Package name">
+                      <input
+                        name="package_name"
+                        required
+                        className={fieldClassName}
+                        placeholder="com.example.app"
+                      />
+                    </FieldLabel>
+                  </section>
+
+                  <section className="grid gap-6 rounded-[22px] bg-white p-5">
+                    <RadioGroup
+                      title="App or game"
+                      name="submission_type"
+                      options={[
+                        { label: "App", value: "app" },
+                        { label: "Game", value: "game" },
+                      ]}
                     />
-                  </label>
+
+                    <RadioGroup
+                      title="Free or paid"
+                      name="pricing_type"
+                      options={[
+                        { label: "Free", value: "free" },
+                        { label: "Paid", value: "paid" },
+                      ]}
+                    />
+                  </section>
+
+                  <section className="grid gap-5 rounded-[22px] bg-white p-5">
+                    <FieldLabel
+                      title="Email"
+                      description="This is for you to get Full Draft Access and Permissions on your app/game"
+                    >
+                      <input
+                        name="gmail"
+                        type="email"
+                        required
+                        className={fieldClassName}
+                        placeholder="name@example.com"
+                      />
+                    </FieldLabel>
+
+                    <div className="rounded-[20px] bg-neutral-50 p-4 text-sm leading-6 text-black/65">
+                      Do you want us to publish your app/game for you? Please
+                      contact{" "}
+                      <a
+                        className="text-black underline"
+                        href="mailto:rent@consolemark.com"
+                      >
+                        rent@consolemark.com
+                      </a>
+                      .
+                    </div>
+
+                    <FieldLabel
+                      title="WhatsApp number"
+                      description="In order to contact you"
+                    >
+                      <input
+                        name="whatsapp_number"
+                        required
+                        pattern="^\+[1-9]\d{7,18}$"
+                        defaultValue={initialWhatsappNumber ?? ""}
+                        className={fieldClassName}
+                        placeholder="+447520603830"
+                      />
+                    </FieldLabel>
+                  </section>
 
                   {message ? (
                     <p
@@ -304,7 +307,7 @@ function RadioGroup({
 }) {
   return (
     <fieldset className="grid gap-3">
-      <legend>{title}</legend>
+      <legend className="text-base leading-none">{title}</legend>
       <div className="grid gap-3 sm:grid-cols-2">
         {options.map((option) => (
           <label
@@ -323,5 +326,27 @@ function RadioGroup({
         ))}
       </div>
     </fieldset>
+  );
+}
+
+function FieldLabel({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid gap-3">
+      <span className="grid gap-1.5">
+        <span className="text-base leading-none">{title}</span>
+        {description ? (
+          <span className="text-sm leading-5 text-black/50">{description}</span>
+        ) : null}
+      </span>
+      {children}
+    </div>
   );
 }

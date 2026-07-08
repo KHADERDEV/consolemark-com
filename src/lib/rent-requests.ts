@@ -3,6 +3,11 @@ import "server-only";
 import { z } from "zod";
 
 import { supabaseRest } from "@/lib/admin/supabase-rest";
+import {
+  createPagedResult,
+  getPaginationQuery,
+  type PagedResult,
+} from "@/lib/pagination";
 
 export const rentRequestStatuses = [
   "requested",
@@ -13,8 +18,20 @@ export const rentRequestStatuses = [
 
 export type RentRequestStatus = (typeof rentRequestStatuses)[number];
 
+export const rentAppStatuses = [
+  "live",
+  "draft",
+  "in_review",
+  "rejected",
+  "unpublished",
+  "suspended_by_google",
+] as const;
+
+export type RentAppStatus = (typeof rentAppStatuses)[number];
+
 export type RentRequest = {
   id: string;
+  request_code: string;
   user_id: string;
   rent_console_id: string;
   app_name: string;
@@ -24,6 +41,7 @@ export type RentRequest = {
   gmail: string;
   whatsapp_number: string;
   status: RentRequestStatus;
+  app_status: RentAppStatus;
   admin_note: string | null;
   created_at: string;
   updated_at: string;
@@ -41,6 +59,8 @@ export type RentRequest = {
     email: string | null;
     display_name: string | null;
     whatsapp_number: string | null;
+    is_trusted: boolean;
+    is_blocked: boolean;
   };
 };
 
@@ -50,11 +70,7 @@ export const rentRequestFormSchema = z.object({
   package_name: z.string().trim().min(1).max(160),
   submission_type: z.enum(["app", "game"]),
   pricing_type: z.enum(["free", "paid"]),
-  gmail: z
-    .email()
-    .refine((value) => value.toLowerCase().endsWith("@gmail.com"), {
-      message: "Use a Gmail address.",
-    }),
+  gmail: z.email(),
   whatsapp_number: z
     .string()
     .trim()
@@ -66,11 +82,12 @@ export const rentRequestFormSchema = z.object({
 
 export const adminRentRequestSchema = z.object({
   status: z.enum(rentRequestStatuses),
+  app_status: z.enum(rentAppStatuses),
   admin_note: z.string().trim().max(2000).optional().nullable(),
 });
 
 const requestSelect =
-  "id,user_id,rent_console_id,app_name,package_name,submission_type,pricing_type,gmail,whatsapp_number,status,admin_note,created_at,updated_at,rent_consoles(id,name,console_type,console_url,live_price,weekly_price,transfer_apps_price,show_price_cents),user_profiles(email,display_name,whatsapp_number)";
+  "id,request_code,user_id,rent_console_id,app_name,package_name,submission_type,pricing_type,gmail,whatsapp_number,status,app_status,admin_note,created_at,updated_at,rent_consoles(id,name,console_type,console_url,live_price,weekly_price,transfer_apps_price,show_price_cents),user_profiles(email,display_name,whatsapp_number,is_trusted,is_blocked)";
 
 export function getStatusLabel(status: RentRequestStatus) {
   const labels: Record<RentRequestStatus, string> = {
@@ -83,6 +100,32 @@ export function getStatusLabel(status: RentRequestStatus) {
   return labels[status];
 }
 
+export function getRentAppStatusLabel(status: RentAppStatus) {
+  const labels: Record<RentAppStatus, string> = {
+    live: "Live",
+    draft: "Draft",
+    in_review: "In Review",
+    rejected: "Rejected",
+    unpublished: "Unpublished",
+    suspended_by_google: "Suspended by Google",
+  };
+
+  return labels[status];
+}
+
+export function getRentAppStatusClass(status: RentAppStatus) {
+  const classes: Record<RentAppStatus, string> = {
+    live: "bg-[#02feb7] text-black",
+    draft: "bg-neutral-200 text-black",
+    in_review: "bg-[#fdd52e] text-black",
+    rejected: "bg-[#ff2780] text-white",
+    unpublished: "bg-black text-white",
+    suspended_by_google: "bg-[#ff2780] text-white",
+  };
+
+  return classes[status];
+}
+
 export async function getUserRentRequests(userId: string) {
   return supabaseRest<RentRequest[]>("rent_requests", {
     query: {
@@ -93,12 +136,54 @@ export async function getUserRentRequests(userId: string) {
   });
 }
 
+export async function getUserRentRequestsPage({
+  userId,
+  page,
+  pageSize,
+}: {
+  userId: string;
+  page: number;
+  pageSize: number;
+}): Promise<PagedResult<RentRequest>> {
+  const rows = await supabaseRest<RentRequest[]>("rent_requests", {
+    query: {
+      select: requestSelect,
+      user_id: `eq.${userId}`,
+      order: "created_at.desc",
+      ...getPaginationQuery({ page, pageSize }),
+    },
+  });
+
+  return createPagedResult({ rows, page, pageSize });
+}
+
+type AdminRentRequestFilters = {
+  status?: string;
+  userId?: string;
+  query?: string;
+  from?: string;
+  to?: string;
+};
+
+type AdminRentRequestPageFilters = AdminRentRequestFilters & {
+  page: number;
+  pageSize: number;
+};
+
+export async function getAdminRentRequests(
+  filters: AdminRentRequestPageFilters,
+): Promise<PagedResult<RentRequest>>;
+export async function getAdminRentRequests(
+  filters: AdminRentRequestFilters,
+): Promise<RentRequest[]>;
 export async function getAdminRentRequests(filters: {
   status?: string;
   userId?: string;
   query?: string;
   from?: string;
   to?: string;
+  page?: number;
+  pageSize?: number;
 }) {
   const query: Record<string, string> = {
     select: requestSelect,
@@ -128,10 +213,27 @@ export async function getAdminRentRequests(filters: {
 
   if (filters.query) {
     const safeQuery = filters.query.replaceAll("*", "").replaceAll(",", " ");
-    query.or = `(app_name.ilike.*${safeQuery}*,package_name.ilike.*${safeQuery}*)`;
+    query.or = `(request_code.ilike.*${safeQuery}*,app_name.ilike.*${safeQuery}*,package_name.ilike.*${safeQuery}*)`;
   }
 
-  return supabaseRest<RentRequest[]>("rent_requests", { query });
+  if (filters.page && filters.pageSize) {
+    Object.assign(
+      query,
+      getPaginationQuery({ page: filters.page, pageSize: filters.pageSize }),
+    );
+  }
+
+  const rows = await supabaseRest<RentRequest[]>("rent_requests", { query });
+
+  if (filters.page && filters.pageSize) {
+    return createPagedResult({
+      rows,
+      page: filters.page,
+      pageSize: filters.pageSize,
+    });
+  }
+
+  return rows;
 }
 
 export async function createRentRequest(input: {
@@ -144,20 +246,50 @@ export async function createRentRequest(input: {
   gmail: string;
   whatsappNumber: string;
 }) {
-  await supabaseRest("rent_requests", {
-    method: "POST",
-    prefer: "return=minimal",
-    body: {
-      user_id: input.userId,
-      rent_console_id: input.rentConsoleId,
-      app_name: input.appName,
-      package_name: input.packageName,
-      submission_type: input.submissionType,
-      pricing_type: input.pricingType,
-      gmail: input.gmail,
-      whatsapp_number: input.whatsappNumber,
-      status: "requested",
+  const rows = await supabaseRest<Array<{ request_code: string }>>(
+    "rent_requests",
+    {
+      method: "POST",
+      prefer: "return=representation",
+      query: {
+        select: "request_code",
+      },
+      body: {
+        user_id: input.userId,
+        rent_console_id: input.rentConsoleId,
+        app_name: input.appName,
+        package_name: input.packageName,
+        submission_type: input.submissionType,
+        pricing_type: input.pricingType,
+        gmail: input.gmail,
+        whatsapp_number: input.whatsappNumber,
+        status: "requested",
+      },
     },
+  );
+
+  return rows[0];
+}
+
+export async function createAdminRentRequest(input: {
+  userId: string;
+  rentConsoleId: string;
+  appName: string;
+  packageName: string;
+  submissionType: "app" | "game";
+  pricingType: "free" | "paid";
+  gmail: string;
+  whatsappNumber: string;
+}) {
+  return createRentRequest({
+    userId: input.userId,
+    rentConsoleId: input.rentConsoleId,
+    appName: input.appName,
+    packageName: input.packageName,
+    submissionType: input.submissionType,
+    pricingType: input.pricingType,
+    gmail: input.gmail,
+    whatsappNumber: input.whatsappNumber,
   });
 }
 
@@ -186,10 +318,13 @@ export async function getUserProfile(userId: string) {
       display_name: string | null;
       avatar_url: string | null;
       whatsapp_number: string | null;
+      is_trusted: boolean;
+      is_blocked: boolean;
     }>
   >("user_profiles", {
     query: {
-      select: "id,email,display_name,avatar_url,whatsapp_number",
+      select:
+        "id,email,display_name,avatar_url,whatsapp_number,is_trusted,is_blocked",
       id: `eq.${userId}`,
       limit: "1",
     },
@@ -225,6 +360,7 @@ export async function updateAdminRentRequest(
     prefer: "return=minimal",
     body: {
       status: data.status,
+      app_status: data.app_status,
       admin_note: data.admin_note ?? null,
     },
   });

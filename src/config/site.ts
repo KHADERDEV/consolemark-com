@@ -1,21 +1,24 @@
 export const siteConfig = {
   name: "Console Mark",
-  tagline: "The trusted marketplace for Publishers.",
+  tagline: "The trusted marketplace for Publishers and Developers.",
   subTagline: "Rent, Buy and Sell Consoles",
   links: {
     home: "/",
     about: "/about-us",
     blogs: "/blogs",
     rent: "/rent-marketplace",
+    payment: "/payment",
     buy: "/buy-marketplace",
     sell: "/sell",
     privacyPolicy: "/privacy-policy",
     termsOfService: "/terms-of-service",
     deleteMyAccount: "/delete-my-account",
     support: "/support",
-    youtube: "https://www.youtube.com/@ConsoleMark-com",
-    telegram: "https://telegram.org/",
+    email: "mailto:support@consolemark.com",
+    telegram: "https://t.me/ConsoleMark",
+    telegramContact: "https://t.me/ConsoleMark_com",
     whatsapp: "https://www.whatsapp.com/",
+    facebook: "https://www.facebook.com/profile.php?id=61591514232928",
   },
   footer: {
     copyright: "© 2026 Console Mark. All rights reserved.",
@@ -25,11 +28,18 @@ export const siteConfig = {
       phone: "+447520603830",
       qrLink: "https://wa.me/qr/R7R262ZNSCZHL1",
     },
+    email: "support@consolemark.com",
+    telegram: {
+      channelLink: "https://t.me/ConsoleMark",
+      contactLink: "https://t.me/ConsoleMark_com",
+      username: "@ConsoleMark_com",
+    },
     columns: [
       {
         title: "Console Services",
         links: [
           { label: "Rent", href: "/rent-marketplace" },
+          { label: "Payment", href: "/payment" },
           { label: "Buy", href: "/buy-marketplace" },
           { label: "Sell", href: "/sell" },
         ],
@@ -97,8 +107,6 @@ export const siteConfig = {
       "https://res.cloudinary.com/destej60y/image/upload/v1770936759/background_3_wehyrv.png",
     scrollDown:
       "https://res.cloudinary.com/destej60y/image/upload/v1770937287/scroll_apbrab.png",
-    youtubeIcon:
-      "https://res.cloudinary.com/destej60y/image/upload/v1780607282/youtube_w2v4v8.png",
     telegramIcon:
       "https://res.cloudinary.com/destej60y/image/upload/v1780607131/communication_k52rdw.png",
     whatsappIcon:

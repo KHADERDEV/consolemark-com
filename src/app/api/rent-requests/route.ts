@@ -41,6 +41,18 @@ export async function POST(request: Request) {
     );
   }
 
+  const profile = await getUserProfile(user.id);
+
+  if (profile?.is_blocked) {
+    return NextResponse.json(
+      {
+        error:
+          "Your developer account is blocked from submitting new rent requests. Contact support if you believe this is a mistake.",
+      },
+      { status: 403 },
+    );
+  }
+
   const consoles = await getPublishedRentConsoles();
   const consoleItem = consoles.find(
     (item) => item.id === parsed.data.rent_console_id,
@@ -53,8 +65,10 @@ export async function POST(request: Request) {
     );
   }
 
+  let rentRequest: { request_code: string };
+
   try {
-    await createRentRequest({
+    rentRequest = await createRentRequest({
       userId: user.id,
       rentConsoleId: parsed.data.rent_console_id,
       appName: parsed.data.app_name,
@@ -81,9 +95,9 @@ export async function POST(request: Request) {
   }
 
   await updateUserWhatsapp(user.id, parsed.data.whatsapp_number);
-  const profile = await getUserProfile(user.id);
 
   await sendRentRequestEmail({
+    requestCode: rentRequest.request_code,
     appName: parsed.data.app_name,
     packageName: parsed.data.package_name,
     submissionType: parsed.data.submission_type,

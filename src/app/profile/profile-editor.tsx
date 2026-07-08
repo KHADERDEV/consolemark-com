@@ -3,11 +3,15 @@
 import { Check, UserCircle, X } from "lucide-react";
 import { useState } from "react";
 
+import { TrustedDeveloperBadge } from "@/components/users/trusted-developer-badge";
+
 type ProfileEditorProps = {
   email?: string | null;
   initialDisplayName: string;
   initialWhatsappNumber?: string | null;
   avatarUrl?: string | null;
+  isTrusted: boolean;
+  isBlocked: boolean;
 };
 
 type DialogState =
@@ -20,6 +24,8 @@ export function ProfileEditor({
   initialDisplayName,
   initialWhatsappNumber,
   avatarUrl,
+  isTrusted,
+  isBlocked,
 }: ProfileEditorProps) {
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [whatsappNumber, setWhatsappNumber] = useState(
@@ -80,8 +86,17 @@ export function ProfileEditor({
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-4xl leading-none">{displayName}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-4xl leading-none">{displayName}</p>
+              {isTrusted ? <TrustedDeveloperBadge /> : null}
+            </div>
             <p className="mt-2 truncate text-sm text-black/55">{email}</p>
+            {isBlocked ? (
+              <p className="mt-3 rounded-full bg-[#ff2780]/15 px-4 py-2 text-sm text-[#b8004e]">
+                Your account is currently blocked from submitting new rent or
+                transfer requests.
+              </p>
+            ) : null}
           </div>
         </div>
 

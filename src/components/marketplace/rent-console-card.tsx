@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { RentConsoleImageDialog } from "@/components/marketplace/rent-console-image-dialog";
 import { RentRequestDialog } from "@/components/marketplace/rent-request-dialog";
+import { TransferRequestDialog } from "@/components/marketplace/transfer-request-dialog";
 import {
   formatMoney,
   getAvailabilityLabel,
@@ -13,6 +14,7 @@ type RentConsoleCardProps = {
   consoleItem: RentConsole;
   isLoggedIn: boolean;
   initialWhatsappNumber?: string | null;
+  transferAppOptions?: Array<{ appName: string; packageName: string }>;
 };
 
 const availabilityClasses = {
@@ -47,6 +49,7 @@ export function RentConsoleCard({
   consoleItem,
   isLoggedIn,
   initialWhatsappNumber,
+  transferAppOptions = [],
 }: RentConsoleCardProps) {
   const showCents = consoleItem.show_price_cents;
   const livePrice = formatMoney(consoleItem.live_price, showCents);
@@ -61,9 +64,9 @@ export function RentConsoleCard({
       />
 
       <div className="flex flex-1 flex-col gap-5 p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="font-lilita text-4xl leading-none tracking-normal">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="font-lilita break-words text-3xl leading-none tracking-normal sm:text-4xl">
               {consoleItem.name}
             </h2>
             <p className="mt-2 text-sm text-black/55">
@@ -71,7 +74,7 @@ export function RentConsoleCard({
               {consoleItem.creation_year}
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap justify-end gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
             <span className="rounded-full border border-black/10 px-3 py-1 text-xs">
               {consoleItem.country_code}
             </span>
@@ -104,20 +107,20 @@ export function RentConsoleCard({
         </div>
 
         <div className="grid gap-4 rounded-[22px] bg-neutral-50 p-5 text-base">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-1 min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between min-[380px]:gap-3">
             <span className="text-black/55">Live Price</span>
             <strong className="text-xl leading-none text-black">
               {livePrice}
             </strong>
           </div>
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-1 min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between min-[380px]:gap-3">
             <span className="text-black/55">Weekly Price</span>
             <strong className="text-xl leading-none text-black">
               {weeklyPrice}
             </strong>
           </div>
           {consoleItem.transfer_apps_available ? (
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col gap-1 min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between min-[380px]:gap-3">
               <span className="text-black/55">Transfer Apps Price</span>
               <strong className="text-xl leading-none text-black">
                 {transferPrice ?? (showCents ? "$0.00" : "$0")}
@@ -136,18 +139,25 @@ export function RentConsoleCard({
               className="h-6 w-6 object-contain"
             />
           </span>
-          <div>
+          <div className="min-w-0">
             <p className="text-xs text-black/50">Owner</p>
-            <p className="text-sm">{consoleItem.owner_name}</p>
+            <p className="break-words text-sm">{consoleItem.owner_name}</p>
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           <RentRequestDialog
             rentConsoleId={consoleItem.id}
             consoleName={consoleItem.name}
             isLoggedIn={isLoggedIn}
             initialWhatsappNumber={initialWhatsappNumber}
+          />
+          <TransferRequestDialog
+            rentConsoleId={consoleItem.id}
+            consoleName={consoleItem.name}
+            isLoggedIn={isLoggedIn}
+            initialWhatsappNumber={initialWhatsappNumber}
+            appOptions={transferAppOptions}
           />
           <a
             href={consoleItem.console_url}

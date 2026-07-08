@@ -3,6 +3,11 @@ import "server-only";
 import { z } from "zod";
 
 import { supabaseRest } from "@/lib/admin/supabase-rest";
+import {
+  createPagedResult,
+  getPaginationQuery,
+  type PagedResult,
+} from "@/lib/pagination";
 
 export const availabilityOptions = [
   "available_for_rent",
@@ -36,6 +41,17 @@ export type RentConsole = {
   is_published: boolean;
   created_at: string;
   updated_at: string;
+};
+
+export type PublishedRentConsoleFilters = {
+  availability?: AvailabilityStatus;
+  consoleType?: ConsoleType;
+  country?: string;
+  yearFrom?: number;
+  yearTo?: number;
+  priceType?: "live_price" | "weekly_price" | "transfer_apps_price";
+  minPrice?: number;
+  maxPrice?: number;
 };
 
 export const rentConsoleFormSchema = z.object({
@@ -109,6 +125,82 @@ export async function getPublishedRentConsoles() {
   });
 }
 
+export async function getPublishedRentConsolesPage({
+  page,
+  pageSize,
+  filters = {},
+}: {
+  page: number;
+  pageSize: number;
+  filters?: PublishedRentConsoleFilters;
+}) {
+  const query: Record<string, string> = {
+    select: selectFields,
+    is_published: "eq.true",
+    order: "sort_order.asc,created_at.desc",
+    ...getPaginationQuery({ page, pageSize }),
+  };
+  const andConditions: string[] = [];
+
+  if (filters.availability) {
+    query.availability_status = `eq.${filters.availability}`;
+  }
+
+  if (filters.consoleType) {
+    query.console_type = `eq.${filters.consoleType}`;
+  }
+
+  if (filters.country) {
+    query.country_code = `eq.${filters.country}`;
+  }
+
+  if (typeof filters.yearFrom === "number") {
+    andConditions.push(`creation_year.gte.${filters.yearFrom}`);
+  }
+
+  if (typeof filters.yearTo === "number") {
+    andConditions.push(`creation_year.lte.${filters.yearTo}`);
+  }
+
+  if (typeof filters.minPrice === "number" && filters.priceType) {
+    andConditions.push(`${filters.priceType}.gte.${filters.minPrice}`);
+  }
+
+  if (typeof filters.maxPrice === "number" && filters.priceType) {
+    andConditions.push(`${filters.priceType}.lte.${filters.maxPrice}`);
+  }
+
+  if (andConditions.length > 0) {
+    query.and = `(${andConditions.join(",")})`;
+  }
+
+  const rows = await supabaseRest<RentConsole[]>("rent_consoles", {
+    query,
+  });
+
+  const result = createPagedResult({ rows, page, pageSize });
+
+  return {
+    consoles: result.items,
+    hasNextPage: result.hasNextPage,
+    hasPreviousPage: result.hasPreviousPage,
+    page: result.page,
+  };
+}
+
+export async function getPublishedRentConsoleFilterOptions() {
+  return supabaseRest<Array<{ country_code: string; creation_year: number }>>(
+    "rent_consoles",
+    {
+      query: {
+        select: "country_code,creation_year",
+        is_published: "eq.true",
+        order: "country_code.asc,creation_year.desc",
+      },
+    },
+  );
+}
+
 export async function getAllRentConsoles() {
   return supabaseRest<RentConsole[]>("rent_consoles", {
     query: {
@@ -116,6 +208,24 @@ export async function getAllRentConsoles() {
       order: "sort_order.asc,created_at.desc",
     },
   });
+}
+
+export async function getAllRentConsolesPage({
+  page,
+  pageSize,
+}: {
+  page: number;
+  pageSize: number;
+}): Promise<PagedResult<RentConsole>> {
+  const rows = await supabaseRest<RentConsole[]>("rent_consoles", {
+    query: {
+      select: selectFields,
+      order: "sort_order.asc,created_at.desc",
+      ...getPaginationQuery({ page, pageSize }),
+    },
+  });
+
+  return createPagedResult({ rows, page, pageSize });
 }
 
 export async function createRentConsole(data: RentConsoleFormData) {
