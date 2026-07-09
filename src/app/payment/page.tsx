@@ -45,7 +45,7 @@ export default async function PaymentPage() {
                       <h2 className="text-4xl leading-none">
                         {wallet.asset_name}
                       </h2>
-                      <span className="rounded-full bg-[#55d3e8]/25 px-3 py-1 text-sm text-black">
+                      <span className="rounded-full bg-[#fdd52e] px-3 py-1 text-sm text-black">
                         {wallet.network_name}
                       </span>
                     </div>
@@ -57,7 +57,7 @@ export default async function PaymentPage() {
 
                 <div className="p-5">
                   <p className="text-sm text-black/45">Wallet address</p>
-                  <div className="mt-3 flex items-start gap-3 rounded-[22px] border border-black/10 bg-white p-4">
+                  <div className="mt-3 flex items-center gap-3 rounded-[22px] border border-black/10 bg-white p-4">
                     <p className="min-w-0 flex-1 break-all text-xl leading-7">
                       {wallet.wallet_address}
                     </p>
