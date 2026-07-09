@@ -1,7 +1,6 @@
 "use client";
 
 import { type CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -139,39 +138,19 @@ export function LoginPanel() {
 
       <div className="mt-8 w-full" ref={googleButtonFrameRef}>
         {googleClientId ? (
-          <div
-            className={`relative min-h-12 w-full overflow-hidden rounded-full ${
-              isPending ? "pointer-events-none opacity-60" : ""
-            }`}
-          >
-            <div className="pointer-events-none flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-black px-5 text-white transition">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white p-1">
-                <Image
-                  src="https://res.cloudinary.com/destej60y/image/upload/v1783555357/0306f033-8480-4a99-bd94-ba0aed73ef2c.png"
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="h-5 w-5 object-contain"
-                />
-              </span>
-              <span className="font-lilita text-base tracking-normal sm:text-lg">
-                Continue with Google
-              </span>
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center opacity-0">
-              <GoogleLogin
-                login_uri={googleLoginUri}
-                onSuccess={signInWithGoogle}
-                onError={handleGoogleLoginError}
-                shape="pill"
-                size="large"
-                state={nextPath}
-                text="continue_with"
-                theme="filled_black"
-                ux_mode="redirect"
-                width={String(googleButtonWidth)}
-              />
-            </div>
+          <div className={isPending ? "pointer-events-none opacity-60" : ""}>
+            <GoogleLogin
+              login_uri={googleLoginUri}
+              onSuccess={signInWithGoogle}
+              onError={handleGoogleLoginError}
+              shape="pill"
+              size="large"
+              state={nextPath}
+              text="continue_with"
+              theme="filled_black"
+              ux_mode="redirect"
+              width={String(googleButtonWidth)}
+            />
           </div>
         ) : (
           <p className="rounded-[20px] bg-[#ff2780]/10 px-4 py-3 text-center text-sm text-[#b8004e]">
