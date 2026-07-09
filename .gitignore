@@ -47,3 +47,7 @@ docs/done/
 # secrets
 secrets/
 /secrets/
+
+# supabase local state
+supabase/.temp/
+/supabase/.temp/

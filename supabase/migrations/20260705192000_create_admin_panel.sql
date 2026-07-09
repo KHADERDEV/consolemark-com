@@ -77,24 +77,3 @@ alter table public.admin_audit_events enable row level security;
 revoke all on public.admin_users from anon, authenticated;
 revoke all on public.admin_sessions from anon, authenticated;
 revoke all on public.admin_audit_events from anon, authenticated;
-
-insert into public.admin_users (
-  email,
-  password_hash,
-  password_salt,
-  password_algorithm,
-  is_active
-)
-values (
-  'khader@consolemark.com',
-  'COKgNdT5cPi-ojW18Fy26V7nT1T7ZNm_zyOiLpY7nYb3eH_2gZz-jwQUpJDPAPULkjo7vEWG78VbZUJwySOcng',
-  '7_mm3XFlQ689f5AFuRJxqCnMSjsZeWiwNDAl_k6Ogeg',
-  'scrypt:N=32768,r=8,p=1,keylen=64',
-  true
-)
-on conflict (email) do update
-set
-  password_hash = excluded.password_hash,
-  password_salt = excluded.password_salt,
-  password_algorithm = excluded.password_algorithm,
-  is_active = excluded.is_active;
