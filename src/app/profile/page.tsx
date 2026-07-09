@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { LinkGoogleButton } from "@/app/profile/link-google-button";
 import { ProfileEditor } from "@/app/profile/profile-editor";
 import { SiteNavbar } from "@/components/layout/site-navbar";
+import { FloatingContactWidget } from "@/components/support/floating-contact-widget";
 import { getUserProfile } from "@/lib/rent-requests";
 import { createClient } from "@/lib/supabase/server";
 
@@ -104,6 +105,7 @@ export default async function ProfilePage() {
           )}
         </div>
       </section>
+      <FloatingContactWidget />
     </main>
   );
 }

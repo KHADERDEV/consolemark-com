@@ -3,6 +3,7 @@ import { SiteNavbar } from "@/components/layout/site-navbar";
 import { HeroSection } from "@/components/sections/hero-section";
 import { MarketplaceCtaSection } from "@/components/sections/marketplace-cta-section";
 import { RentServicesSection } from "@/components/sections/rent-services-section";
+import { FloatingContactWidget } from "@/components/support/floating-contact-widget";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <RentServicesSection />
       <MarketplaceCtaSection />
       <SiteFooter />
+      <FloatingContactWidget />
     </main>
   );
 }

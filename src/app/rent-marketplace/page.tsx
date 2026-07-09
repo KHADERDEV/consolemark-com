@@ -2,6 +2,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteNavbar } from "@/components/layout/site-navbar";
 import { RentConsoleCard } from "@/components/marketplace/rent-console-card";
 import { RentMarketplaceFilters } from "@/components/marketplace/rent-marketplace-filters";
+import { FloatingContactWidget } from "@/components/support/floating-contact-widget";
 import { PagePagination } from "@/components/ui/page-pagination";
 import { getPageValue } from "@/lib/pagination";
 import {
@@ -226,6 +227,7 @@ export default async function RentMarketplacePage({
         </div>
       </section>
       <SiteFooter />
+      <FloatingContactWidget />
     </main>
   );
 }

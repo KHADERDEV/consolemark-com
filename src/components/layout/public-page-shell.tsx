@@ -2,6 +2,7 @@ import type React from "react";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteNavbar } from "@/components/layout/site-navbar";
+import { FloatingContactWidget } from "@/components/support/floating-contact-widget";
 
 type PublicPageShellProps = {
   eyebrow: string;
@@ -43,6 +44,7 @@ export function PublicPageShell({
         {children}
       </section>
       <SiteFooter />
+      <FloatingContactWidget />
     </main>
   );
 }
