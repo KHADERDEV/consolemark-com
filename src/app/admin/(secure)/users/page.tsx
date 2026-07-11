@@ -56,17 +56,25 @@ export default async function AdminUsersPage({
     perPage: PAGE_SIZE + 1,
   });
 
-  const fetchedUsers = data?.users ?? [];
+  const fetchedUsers = (data?.users ?? []).filter((user) => {
+    const deletedAt = (user as { deleted_at?: string | null }).deleted_at;
+
+    return !deletedAt;
+  });
   const users = fetchedUsers.slice(0, PAGE_SIZE);
   const hasNextPage = fetchedUsers.length > PAGE_SIZE;
   const hasPreviousPage = page > 1;
-  const profiles = await supabaseRest<UserProfile[]>("user_profiles", {
-    query: {
-      select:
-        "id,email,display_name,avatar_url,whatsapp_number,telegram_username,telegram_number,is_trusted,is_blocked,created_at,updated_at",
-      order: "created_at.desc",
-    },
-  });
+  const userIds = users.map((user) => user.id);
+  const profiles =
+    userIds.length > 0
+      ? await supabaseRest<UserProfile[]>("user_profiles", {
+          query: {
+            select:
+              "id,email,display_name,avatar_url,whatsapp_number,telegram_username,telegram_number,is_trusted,is_blocked,created_at,updated_at",
+            id: `in.(${userIds.join(",")})`,
+          },
+        })
+      : [];
   const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
 
   return (
