@@ -5,13 +5,14 @@ import {
   getConsoleTypeLabel,
   type RentConsole,
 } from "@/lib/rent-consoles";
+import { HighlightColorField } from "./highlight-color-field";
 
 type ListingFormProps = {
   consoleItem?: RentConsole;
 };
 
 const defaultImageUrl =
-  "https://res.cloudinary.com/destej60y/image/upload/v1783282724/edcac0a1-9a74-4107-821d-755169b5f27e.png";
+  "";
 
 export function ListingForm({ consoleItem }: ListingFormProps) {
   const isEditing = consoleItem !== undefined;
@@ -30,14 +31,14 @@ export function ListingForm({ consoleItem }: ListingFormProps) {
         <Field
           label="Country Code"
           name="country_code"
-          defaultValue={consoleItem?.country_code ?? "US"}
+          defaultValue={consoleItem?.country_code ?? "UK"}
           maxLength={3}
         />
         <label className="grid gap-2 text-sm">
           <span className="font-lilita">Console Type</span>
           <select
             name="console_type"
-            defaultValue={consoleItem?.console_type ?? "personal"}
+            defaultValue={consoleItem?.console_type ?? "organization"}
             className="h-11 rounded-full border border-black/15 bg-white px-4 outline-none focus:border-black"
           >
             {consoleTypeOptions.map((option) => (
@@ -110,7 +111,7 @@ export function ListingForm({ consoleItem }: ListingFormProps) {
         type="url"
         defaultValue={
           consoleItem?.console_url ??
-          "https://play.google.com/store/apps/dev?id=8228837381578415347"
+          ""
         }
       />
       <Field
@@ -118,12 +119,13 @@ export function ListingForm({ consoleItem }: ListingFormProps) {
         name="owner_name"
         defaultValue={consoleItem?.owner_name ?? "Console Mark"}
       />
+      <HighlightColorField defaultValue={consoleItem?.highlight_marker_color} />
 
       <div className="grid gap-3 sm:grid-cols-3">
         <CheckboxField
           label="Show Price Cents"
           name="show_price_cents"
-          defaultChecked={consoleItem?.show_price_cents ?? true}
+          defaultChecked={consoleItem?.show_price_cents ?? false}
         />
         <CheckboxField
           label="Draft Access Available"

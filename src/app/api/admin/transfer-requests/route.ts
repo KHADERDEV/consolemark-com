@@ -3,18 +3,32 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminSession } from "@/lib/admin/auth";
-import { updateUserWhatsapp } from "@/lib/rent-requests";
 import {
-  createAdminTransferRequest,
-  transferRequestFormSchema,
-} from "@/lib/transfer-requests";
+  hasContactMethod,
+  optionalPhoneContactSchema,
+  optionalTelegramUsernameSchema,
+} from "@/lib/contact-methods";
+import {
+  toContactMethods,
+  updateUserContactMethods,
+} from "@/lib/rent-requests";
+import { createAdminTransferRequest } from "@/lib/transfer-requests";
 
-const adminCreateTransferRequestSchema = transferRequestFormSchema
-  .omit({ package_names: true })
-  .extend({
+const adminCreateTransferRequestSchema = z
+  .object({
     user_id: z.uuid(),
+    rent_console_id: z.uuid(),
+    developer_account_id: z.string().trim().min(1).max(160),
+    transaction_id: z.string().trim().min(1).max(160),
     app_names: z.string().trim().min(1).max(2000),
     package_names_text: z.string().trim().min(1).max(2000),
+    whatsapp_number: optionalPhoneContactSchema,
+    telegram_username: optionalTelegramUsernameSchema,
+    telegram_number: optionalPhoneContactSchema,
+  })
+  .refine(hasContactMethod, {
+    message: "Add at least one contact method.",
+    path: ["whatsapp_number"],
   });
 
 function splitLines(value: string) {
@@ -42,6 +56,8 @@ export async function POST(request: NextRequest) {
     app_names: formData.get("app_names"),
     package_names_text: formData.get("package_names_text"),
     whatsapp_number: formData.get("whatsapp_number"),
+    telegram_username: formData.get("telegram_username"),
+    telegram_number: formData.get("telegram_number"),
   });
 
   if (!parsed.success) {
@@ -61,6 +77,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const contactMethods = toContactMethods(parsed.data);
+
   try {
     await createAdminTransferRequest({
       userId: parsed.data.user_id,
@@ -69,7 +87,7 @@ export async function POST(request: NextRequest) {
       transactionId: parsed.data.transaction_id,
       appNames,
       packageNames,
-      whatsappNumber: parsed.data.whatsapp_number,
+      ...contactMethods,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
@@ -84,7 +102,7 @@ export async function POST(request: NextRequest) {
     throw error;
   }
 
-  await updateUserWhatsapp(parsed.data.user_id, parsed.data.whatsapp_number);
+  await updateUserContactMethods(parsed.data.user_id, contactMethods);
   revalidatePath("/admin/transfer-orders");
   revalidatePath("/my-transfers");
 

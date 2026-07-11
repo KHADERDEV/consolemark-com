@@ -9,6 +9,8 @@ type ProfileEditorProps = {
   email?: string | null;
   initialDisplayName: string;
   initialWhatsappNumber?: string | null;
+  initialTelegramUsername?: string | null;
+  initialTelegramNumber?: string | null;
   avatarUrl?: string | null;
   isTrusted: boolean;
   isBlocked: boolean;
@@ -23,6 +25,8 @@ export function ProfileEditor({
   email,
   initialDisplayName,
   initialWhatsappNumber,
+  initialTelegramUsername,
+  initialTelegramNumber,
   avatarUrl,
   isTrusted,
   isBlocked,
@@ -30,6 +34,12 @@ export function ProfileEditor({
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [whatsappNumber, setWhatsappNumber] = useState(
     initialWhatsappNumber ?? "",
+  );
+  const [telegramUsername, setTelegramUsername] = useState(
+    initialTelegramUsername ?? "",
+  );
+  const [telegramNumber, setTelegramNumber] = useState(
+    initialTelegramNumber ?? "",
   );
   const [isPending, setIsPending] = useState(false);
   const [dialog, setDialog] = useState<DialogState>(null);
@@ -44,7 +54,12 @@ export function ProfileEditor({
     });
     const payload = (await response.json()) as {
       error?: string;
-      profile?: { display_name?: string; whatsapp_number?: string | null };
+      profile?: {
+        display_name?: string;
+        whatsapp_number?: string | null;
+        telegram_username?: string | null;
+        telegram_number?: string | null;
+      };
     };
 
     setIsPending(false);
@@ -59,6 +74,8 @@ export function ProfileEditor({
 
     setDisplayName(payload.profile?.display_name ?? displayName);
     setWhatsappNumber(payload.profile?.whatsapp_number ?? "");
+    setTelegramUsername(payload.profile?.telegram_username ?? "");
+    setTelegramNumber(payload.profile?.telegram_number ?? "");
     setDialog({
       type: "success",
       message: "Your profile has been updated successfully.",
@@ -114,21 +131,55 @@ export function ProfileEditor({
             />
           </label>
 
-          <label className="grid gap-2">
-            <span className="text-sm text-black/55">WhatsApp number</span>
-            <input
-              name="whatsapp_number"
-              value={whatsappNumber}
-              onChange={(event) => setWhatsappNumber(event.target.value)}
-              pattern="^\+[1-9]\d{7,18}$"
-              className="h-12 rounded-full border border-black/15 bg-white px-5 outline-none transition focus:border-black"
-              placeholder="+447520603830"
-            />
-            <span className="text-xs text-black/45">
-              Include the full country code. Leave empty if you do not want to
-              save a WhatsApp number yet.
-            </span>
-          </label>
+          <section className="grid gap-4 rounded-[24px] border border-black/10 bg-white p-5">
+            <div className="grid gap-1">
+              <p className="text-xl leading-none">Contact methods</p>
+              <p className="text-sm leading-5 text-black/50">
+                Save the contact details you want us to use for rent and
+                transfer requests.
+              </p>
+            </div>
+
+            <label className="grid gap-2">
+              <span className="text-sm text-black/55">WhatsApp number</span>
+              <input
+                name="whatsapp_number"
+                value={whatsappNumber}
+                onChange={(event) => setWhatsappNumber(event.target.value)}
+                pattern="^\+[1-9]\d{7,18}$"
+                className="h-12 rounded-full border border-black/15 bg-white px-5 outline-none transition focus:border-black"
+                placeholder="+447520603830"
+              />
+            </label>
+
+            <label className="grid gap-2">
+              <span className="text-sm text-black/55">Telegram username</span>
+              <input
+                name="telegram_username"
+                value={telegramUsername}
+                onChange={(event) => setTelegramUsername(event.target.value)}
+                className="h-12 rounded-full border border-black/15 bg-white px-5 outline-none transition focus:border-black"
+                placeholder="@ConsoleMark_com"
+              />
+            </label>
+
+            <label className="grid gap-2">
+              <span className="text-sm text-black/55">Telegram number</span>
+              <input
+                name="telegram_number"
+                value={telegramNumber}
+                onChange={(event) => setTelegramNumber(event.target.value)}
+                pattern="^\+[1-9]\d{7,18}$"
+                className="h-12 rounded-full border border-black/15 bg-white px-5 outline-none transition focus:border-black"
+                placeholder="+447520603830"
+              />
+            </label>
+
+            <p className="text-xs leading-5 text-black/45">
+              Phone numbers must include the country code. Telegram username can
+              include or omit the @ symbol.
+            </p>
+          </section>
 
           <button
             type="submit"

@@ -37,6 +37,7 @@ export type RentConsole = {
   owner_name: string;
   console_url: string;
   image_url: string;
+  highlight_marker_color: string | null;
   sort_order: number;
   is_published: boolean;
   created_at: string;
@@ -74,6 +75,15 @@ export const rentConsoleFormSchema = z.object({
   owner_name: z.string().trim().min(1).max(120),
   console_url: z.url(),
   image_url: z.url(),
+  highlight_marker_color: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || null)
+    .refine(
+      (value) => value === null || /^#[0-9A-Fa-f]{6}$/.test(value),
+      "Use a valid hex color.",
+    ),
   sort_order: z.coerce.number().int().default(0),
   is_published: z.coerce.boolean().default(false),
 });
@@ -81,7 +91,7 @@ export const rentConsoleFormSchema = z.object({
 export type RentConsoleFormData = z.infer<typeof rentConsoleFormSchema>;
 
 const selectFields =
-  "id,name,country_code,console_type,creation_year,availability_status,draft_access_available,transfer_apps_available,live_price,weekly_price,transfer_apps_price,show_price_cents,owner_name,console_url,image_url,sort_order,is_published,created_at,updated_at";
+  "id,name,country_code,console_type,creation_year,availability_status,draft_access_available,transfer_apps_available,live_price,weekly_price,transfer_apps_price,show_price_cents,owner_name,console_url,image_url,highlight_marker_color,sort_order,is_published,created_at,updated_at";
 
 export function formatMoney(value: string | number | null, showCents = true) {
   if (value === null) {
@@ -286,6 +296,7 @@ export function parseRentConsoleForm(formData: FormData) {
     owner_name: formData.get("owner_name"),
     console_url: formData.get("console_url"),
     image_url: formData.get("image_url"),
+    highlight_marker_color: formData.get("highlight_marker_color"),
     sort_order: formData.get("sort_order") || 0,
     is_published: formData.has("is_published"),
   });
@@ -309,6 +320,7 @@ function serializeRentConsole(data: RentConsoleFormData) {
     owner_name: data.owner_name,
     console_url: data.console_url,
     image_url: data.image_url,
+    highlight_marker_color: data.highlight_marker_color,
     sort_order: data.sort_order,
     is_published: data.is_published,
   };

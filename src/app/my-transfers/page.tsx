@@ -352,7 +352,15 @@ export default async function MyTransfersPage({
                       />
                       <DetailItem
                         label="WhatsApp number"
-                        value={request.whatsapp_number}
+                        value={request.whatsapp_number ?? "Not provided"}
+                      />
+                      <DetailItem
+                        label="Telegram username"
+                        value={request.telegram_username ?? "Not provided"}
+                      />
+                      <DetailItem
+                        label="Telegram number"
+                        value={request.telegram_number ?? "Not provided"}
                       />
                     </div>
                   </div>

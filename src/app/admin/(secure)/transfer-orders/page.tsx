@@ -140,10 +140,23 @@ function AddTransferRequestForm({
         </div>
         <input
           name="whatsapp_number"
-          required
           placeholder="WhatsApp number, e.g. +447520603830"
           className="h-12 rounded-full border border-black/15 bg-white px-4 outline-none"
         />
+        <input
+          name="telegram_username"
+          placeholder="Telegram username, e.g. @ConsoleMark_com"
+          className="h-12 rounded-full border border-black/15 bg-white px-4 outline-none"
+        />
+        <input
+          name="telegram_number"
+          placeholder="Telegram number, e.g. +447520603830"
+          className="h-12 rounded-full border border-black/15 bg-white px-4 outline-none"
+        />
+        <p className="text-xs leading-5 text-black/50">
+          Add at least one contact method: WhatsApp, Telegram username, or
+          Telegram number.
+        </p>
         <button
           type="submit"
           className="h-12 rounded-full bg-black px-5 text-white transition hover:bg-[#55d3e8] hover:text-black"
@@ -363,7 +376,15 @@ export default async function AdminTransferOrdersPage({
                       <div className="mt-4 grid gap-3 lg:grid-cols-2">
                         <Detail
                           label="WhatsApp"
-                          value={request.whatsapp_number}
+                          value={request.whatsapp_number ?? "Not provided"}
+                        />
+                        <Detail
+                          label="Telegram username"
+                          value={request.telegram_username ?? "Not provided"}
+                        />
+                        <Detail
+                          label="Telegram number"
+                          value={request.telegram_number ?? "Not provided"}
                         />
                         <Detail
                           label="User email"
@@ -380,6 +401,27 @@ export default async function AdminTransferOrdersPage({
                           }
                         />
                         <Detail label="User ID" value={request.user_id} />
+                        <Detail
+                          label="Stored profile WhatsApp"
+                          value={
+                            request.user_profiles?.whatsapp_number ??
+                            "Not stored"
+                          }
+                        />
+                        <Detail
+                          label="Stored Telegram username"
+                          value={
+                            request.user_profiles?.telegram_username ??
+                            "Not stored"
+                          }
+                        />
+                        <Detail
+                          label="Stored Telegram number"
+                          value={
+                            request.user_profiles?.telegram_number ??
+                            "Not stored"
+                          }
+                        />
                       </div>
                     </div>
 

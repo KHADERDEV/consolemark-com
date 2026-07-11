@@ -17,6 +17,8 @@ type UserProfile = {
   display_name: string | null;
   avatar_url: string | null;
   whatsapp_number: string | null;
+  telegram_username: string | null;
+  telegram_number: string | null;
   is_trusted: boolean;
   is_blocked: boolean;
   created_at: string;
@@ -61,7 +63,7 @@ export default async function AdminUsersPage({
   const profiles = await supabaseRest<UserProfile[]>("user_profiles", {
     query: {
       select:
-        "id,email,display_name,avatar_url,whatsapp_number,is_trusted,is_blocked,created_at,updated_at",
+        "id,email,display_name,avatar_url,whatsapp_number,telegram_username,telegram_number,is_trusted,is_blocked,created_at,updated_at",
       order: "created_at.desc",
     },
   });
@@ -197,6 +199,18 @@ export default async function AdminUsersPage({
                       <p className="text-xs text-black/45">WhatsApp</p>
                       <p className="mt-1 break-words text-base leading-5">
                         {profile?.whatsapp_number ?? "Not stored"}
+                      </p>
+                    </div>
+                    <div className="rounded-[18px] bg-white p-4">
+                      <p className="text-xs text-black/45">Telegram username</p>
+                      <p className="mt-1 break-words text-base leading-5">
+                        {profile?.telegram_username ?? "Not stored"}
+                      </p>
+                    </div>
+                    <div className="rounded-[18px] bg-white p-4">
+                      <p className="text-xs text-black/45">Telegram number</p>
+                      <p className="mt-1 break-words text-base leading-5">
+                        {profile?.telegram_number ?? "Not stored"}
                       </p>
                     </div>
 

@@ -4,6 +4,8 @@ import { ChevronDown, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { ContactMethodSelector } from "@/components/marketplace/contact-method-selector";
+
 type TransferAppOption = {
   appName: string;
   packageName: string;
@@ -14,6 +16,8 @@ type TransferRequestDialogProps = {
   consoleName: string;
   isLoggedIn: boolean;
   initialWhatsappNumber?: string | null;
+  initialTelegramUsername?: string | null;
+  initialTelegramNumber?: string | null;
   appOptions: TransferAppOption[];
 };
 
@@ -27,6 +31,8 @@ export function TransferRequestDialog({
   consoleName,
   isLoggedIn,
   initialWhatsappNumber,
+  initialTelegramUsername,
+  initialTelegramNumber,
   appOptions,
 }: TransferRequestDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -234,19 +240,12 @@ export function TransferRequestDialog({
                       )}
                     </div>
 
-                    <FieldLabel
-                      title="WhatsApp number"
-                      description="In order to contact you"
-                    >
-                      <input
-                        name="whatsapp_number"
-                        required
-                        pattern="^\+[1-9]\d{7,18}$"
-                        defaultValue={initialWhatsappNumber ?? ""}
-                        className={fieldClassName}
-                        placeholder="+447520603830"
-                      />
-                    </FieldLabel>
+                    <ContactMethodSelector
+                      initialWhatsappNumber={initialWhatsappNumber}
+                      initialTelegramUsername={initialTelegramUsername}
+                      initialTelegramNumber={initialTelegramNumber}
+                      fieldClassName={fieldClassName}
+                    />
                   </section>
 
                   {message ? (

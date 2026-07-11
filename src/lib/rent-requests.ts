@@ -4,6 +4,12 @@ import { z } from "zod";
 
 import { supabaseRest } from "@/lib/admin/supabase-rest";
 import {
+  hasContactMethod,
+  optionalPhoneContactSchema,
+  optionalTelegramUsernameSchema,
+  toContactMethods,
+} from "@/lib/contact-methods";
+import {
   createPagedResult,
   getPaginationQuery,
   type PagedResult,
@@ -39,7 +45,9 @@ export type RentRequest = {
   submission_type: "app" | "game";
   pricing_type: "free" | "paid";
   gmail: string;
-  whatsapp_number: string;
+  whatsapp_number: string | null;
+  telegram_username: string | null;
+  telegram_number: string | null;
   status: RentRequestStatus;
   app_status: RentAppStatus;
   admin_note: string | null;
@@ -59,26 +67,42 @@ export type RentRequest = {
     email: string | null;
     display_name: string | null;
     whatsapp_number: string | null;
+    telegram_username: string | null;
+    telegram_number: string | null;
     is_trusted: boolean;
     is_blocked: boolean;
   };
 };
 
-export const rentRequestFormSchema = z.object({
-  rent_console_id: z.uuid(),
-  app_name: z.string().trim().min(1).max(30),
-  package_name: z.string().trim().min(1).max(160),
-  submission_type: z.enum(["app", "game"]),
-  pricing_type: z.enum(["free", "paid"]),
-  gmail: z.email(),
-  whatsapp_number: z
-    .string()
-    .trim()
-    .regex(
-      /^\+[1-9]\d{7,18}$/,
-      "Use a full WhatsApp number with country code.",
-    ),
-});
+const contactMethodsShape = {
+  whatsapp_number: optionalPhoneContactSchema,
+  telegram_username: optionalTelegramUsernameSchema,
+  telegram_number: optionalPhoneContactSchema,
+};
+
+export const contactMethodsSchema = z
+  .object({
+    ...contactMethodsShape,
+  })
+  .refine(hasContactMethod, {
+    message: "Add at least one contact method.",
+    path: ["whatsapp_number"],
+  });
+
+export const rentRequestFormSchema = z
+  .object({
+    rent_console_id: z.uuid(),
+    app_name: z.string().trim().min(1).max(30),
+    package_name: z.string().trim().min(1).max(160),
+    submission_type: z.enum(["app", "game"]),
+    pricing_type: z.enum(["free", "paid"]),
+    gmail: z.email(),
+    ...contactMethodsShape,
+  })
+  .refine(hasContactMethod, {
+    message: "Add at least one contact method.",
+    path: ["whatsapp_number"],
+  });
 
 export const adminRentRequestSchema = z.object({
   status: z.enum(rentRequestStatuses),
@@ -87,7 +111,7 @@ export const adminRentRequestSchema = z.object({
 });
 
 const requestSelect =
-  "id,request_code,user_id,rent_console_id,app_name,package_name,submission_type,pricing_type,gmail,whatsapp_number,status,app_status,admin_note,created_at,updated_at,rent_consoles(id,name,console_type,console_url,live_price,weekly_price,transfer_apps_price,show_price_cents),user_profiles(email,display_name,whatsapp_number,is_trusted,is_blocked)";
+  "id,request_code,user_id,rent_console_id,app_name,package_name,submission_type,pricing_type,gmail,whatsapp_number,telegram_username,telegram_number,status,app_status,admin_note,created_at,updated_at,rent_consoles(id,name,console_type,console_url,live_price,weekly_price,transfer_apps_price,show_price_cents),user_profiles(email,display_name,whatsapp_number,telegram_username,telegram_number,is_trusted,is_blocked)";
 
 export function getStatusLabel(status: RentRequestStatus) {
   const labels: Record<RentRequestStatus, string> = {
@@ -244,7 +268,9 @@ export async function createRentRequest(input: {
   submissionType: "app" | "game";
   pricingType: "free" | "paid";
   gmail: string;
-  whatsappNumber: string;
+  whatsappNumber: string | null;
+  telegramUsername: string | null;
+  telegramNumber: string | null;
 }) {
   const rows = await supabaseRest<Array<{ request_code: string }>>(
     "rent_requests",
@@ -263,6 +289,8 @@ export async function createRentRequest(input: {
         pricing_type: input.pricingType,
         gmail: input.gmail,
         whatsapp_number: input.whatsappNumber,
+        telegram_username: input.telegramUsername,
+        telegram_number: input.telegramNumber,
         status: "requested",
       },
     },
@@ -279,7 +307,9 @@ export async function createAdminRentRequest(input: {
   submissionType: "app" | "game";
   pricingType: "free" | "paid";
   gmail: string;
-  whatsappNumber: string;
+  whatsappNumber: string | null;
+  telegramUsername: string | null;
+  telegramNumber: string | null;
 }) {
   return createRentRequest({
     userId: input.userId,
@@ -290,6 +320,31 @@ export async function createAdminRentRequest(input: {
     pricingType: input.pricingType,
     gmail: input.gmail,
     whatsappNumber: input.whatsappNumber,
+    telegramUsername: input.telegramUsername,
+    telegramNumber: input.telegramNumber,
+  });
+}
+
+export async function updateUserContactMethods(
+  userId: string,
+  contactMethods: {
+    whatsappNumber: string | null;
+    telegramUsername: string | null;
+    telegramNumber: string | null;
+  },
+) {
+  await supabaseRest("user_profiles", {
+    method: "POST",
+    query: {
+      on_conflict: "id",
+    },
+    prefer: "resolution=merge-duplicates,return=minimal",
+    body: {
+      id: userId,
+      whatsapp_number: contactMethods.whatsappNumber,
+      telegram_username: contactMethods.telegramUsername,
+      telegram_number: contactMethods.telegramNumber,
+    },
   });
 }
 
@@ -318,13 +373,15 @@ export async function getUserProfile(userId: string) {
       display_name: string | null;
       avatar_url: string | null;
       whatsapp_number: string | null;
+      telegram_username: string | null;
+      telegram_number: string | null;
       is_trusted: boolean;
       is_blocked: boolean;
     }>
   >("user_profiles", {
     query: {
       select:
-        "id,email,display_name,avatar_url,whatsapp_number,is_trusted,is_blocked",
+        "id,email,display_name,avatar_url,whatsapp_number,telegram_username,telegram_number,is_trusted,is_blocked",
       id: `eq.${userId}`,
       limit: "1",
     },
@@ -332,6 +389,8 @@ export async function getUserProfile(userId: string) {
 
   return rows[0] ?? null;
 }
+
+export { toContactMethods };
 
 export async function cancelRentRequest(id: string, userId: string) {
   await supabaseRest("rent_requests", {

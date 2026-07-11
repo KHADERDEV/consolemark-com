@@ -2,19 +2,17 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { supabaseRest } from "@/lib/admin/supabase-rest";
+import {
+  optionalPhoneContactSchema,
+  optionalTelegramUsernameSchema,
+} from "@/lib/contact-methods";
 import { createClient } from "@/lib/supabase/server";
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(1).max(80),
-  whatsapp_number: z
-    .string()
-    .trim()
-    .optional()
-    .transform((value) => value ?? "")
-    .refine(
-      (value) => value === "" || /^\+[1-9]\d{7,18}$/.test(value),
-      "Use a full WhatsApp number with country code.",
-    ),
+  whatsapp_number: optionalPhoneContactSchema,
+  telegram_username: optionalTelegramUsernameSchema,
+  telegram_number: optionalPhoneContactSchema,
 });
 
 function getMetadataString(
@@ -49,6 +47,8 @@ export async function POST(request: Request) {
   const parsed = profileSchema.safeParse({
     display_name: formData.get("display_name"),
     whatsapp_number: formData.get("whatsapp_number"),
+    telegram_username: formData.get("telegram_username"),
+    telegram_number: formData.get("telegram_number"),
   });
 
   if (!parsed.success) {
@@ -59,6 +59,8 @@ export async function POST(request: Request) {
   }
 
   const whatsappNumber = parsed.data.whatsapp_number || null;
+  const telegramUsername = parsed.data.telegram_username || null;
+  const telegramNumber = parsed.data.telegram_number || null;
   const avatarUrl =
     getMetadataString(user.user_metadata, ["avatar_url", "picture"]) ??
     user.identities
@@ -80,6 +82,8 @@ export async function POST(request: Request) {
       display_name: parsed.data.display_name,
       ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
       whatsapp_number: whatsappNumber,
+      telegram_username: telegramUsername,
+      telegram_number: telegramNumber,
     },
   });
 
@@ -102,6 +106,8 @@ export async function POST(request: Request) {
     profile: {
       display_name: parsed.data.display_name,
       whatsapp_number: whatsappNumber,
+      telegram_username: telegramUsername,
+      telegram_number: telegramNumber,
     },
   });
 }

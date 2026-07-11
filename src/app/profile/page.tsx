@@ -71,6 +71,8 @@ export default async function ProfilePage() {
           email={user.email}
           initialDisplayName={displayName}
           initialWhatsappNumber={profile?.whatsapp_number}
+          initialTelegramUsername={profile?.telegram_username}
+          initialTelegramNumber={profile?.telegram_number}
           avatarUrl={avatarUrl}
           isTrusted={profile?.is_trusted ?? false}
           isBlocked={profile?.is_blocked ?? false}

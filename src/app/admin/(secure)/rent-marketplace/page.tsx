@@ -115,6 +115,17 @@ export default async function AdminRentMarketplacePage({
                   <span className="rounded-full border border-black/10 bg-white px-3 py-1">
                     {getAvailabilityLabel(consoleItem.availability_status)}
                   </span>
+                  {consoleItem.highlight_marker_color ? (
+                    <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
+                      <span
+                        className="h-3 w-6 rounded-full"
+                        style={{
+                          backgroundColor: consoleItem.highlight_marker_color,
+                        }}
+                      />
+                      Marker {consoleItem.highlight_marker_color}
+                    </span>
+                  ) : null}
                 </div>
               </div>
 
@@ -150,6 +161,12 @@ export default async function AdminRentMarketplacePage({
                   <p>
                     Sort order:{" "}
                     <span className="text-black">{consoleItem.sort_order}</span>
+                  </p>
+                  <p>
+                    Highlight marker:{" "}
+                    <span className="text-black">
+                      {consoleItem.highlight_marker_color ?? "None"}
+                    </span>
                   </p>
                 </div>
                 <DeleteListingButton

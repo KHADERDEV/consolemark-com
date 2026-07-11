@@ -4,11 +4,15 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { ContactMethodSelector } from "@/components/marketplace/contact-method-selector";
+
 type RentRequestDialogProps = {
   rentConsoleId: string;
   consoleName: string;
   isLoggedIn: boolean;
   initialWhatsappNumber?: string | null;
+  initialTelegramUsername?: string | null;
+  initialTelegramNumber?: string | null;
 };
 
 type SubmissionState = "idle" | "pending" | "success" | "error";
@@ -21,6 +25,8 @@ export function RentRequestDialog({
   consoleName,
   isLoggedIn,
   initialWhatsappNumber,
+  initialTelegramUsername,
+  initialTelegramNumber,
 }: RentRequestDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
@@ -197,19 +203,12 @@ export function RentRequestDialog({
                       .
                     </div>
 
-                    <FieldLabel
-                      title="WhatsApp number"
-                      description="In order to contact you"
-                    >
-                      <input
-                        name="whatsapp_number"
-                        required
-                        pattern="^\+[1-9]\d{7,18}$"
-                        defaultValue={initialWhatsappNumber ?? ""}
-                        className={fieldClassName}
-                        placeholder="+447520603830"
-                      />
-                    </FieldLabel>
+                    <ContactMethodSelector
+                      initialWhatsappNumber={initialWhatsappNumber}
+                      initialTelegramUsername={initialTelegramUsername}
+                      initialTelegramNumber={initialTelegramNumber}
+                      fieldClassName={fieldClassName}
+                    />
                   </section>
 
                   {message ? (

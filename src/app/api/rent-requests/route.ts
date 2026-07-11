@@ -6,7 +6,8 @@ import {
   createRentRequest,
   getUserProfile,
   rentRequestFormSchema,
-  updateUserWhatsapp,
+  toContactMethods,
+  updateUserContactMethods,
 } from "@/lib/rent-requests";
 import { createClient } from "@/lib/supabase/server";
 
@@ -32,6 +33,8 @@ export async function POST(request: Request) {
     pricing_type: formData.get("pricing_type"),
     gmail: formData.get("gmail"),
     whatsapp_number: formData.get("whatsapp_number"),
+    telegram_username: formData.get("telegram_username"),
+    telegram_number: formData.get("telegram_number"),
   });
 
   if (!parsed.success) {
@@ -66,6 +69,7 @@ export async function POST(request: Request) {
   }
 
   let rentRequest: { request_code: string };
+  const contactMethods = toContactMethods(parsed.data);
 
   try {
     rentRequest = await createRentRequest({
@@ -76,7 +80,7 @@ export async function POST(request: Request) {
       submissionType: parsed.data.submission_type,
       pricingType: parsed.data.pricing_type,
       gmail: parsed.data.gmail,
-      whatsappNumber: parsed.data.whatsapp_number,
+      ...contactMethods,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
@@ -94,7 +98,7 @@ export async function POST(request: Request) {
     throw error;
   }
 
-  await updateUserWhatsapp(user.id, parsed.data.whatsapp_number);
+  await updateUserContactMethods(user.id, contactMethods);
 
   await sendRentRequestEmail({
     requestCode: rentRequest.request_code,
@@ -103,7 +107,7 @@ export async function POST(request: Request) {
     submissionType: parsed.data.submission_type,
     pricingType: parsed.data.pricing_type,
     gmail: parsed.data.gmail,
-    whatsappNumber: parsed.data.whatsapp_number,
+    ...contactMethods,
     userEmail: profile?.email ?? user.email ?? undefined,
     consoleName: consoleItem.name,
     consoleUrl: consoleItem.console_url,

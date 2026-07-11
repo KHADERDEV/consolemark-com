@@ -11,7 +11,7 @@ const sections = [
   {
     title: "1. Information We Collect",
     body: [
-      "Account information, including email address, profile name, avatar, linked authentication provider, and WhatsApp number when provided.",
+      "Account information, including email address, profile name, avatar, linked authentication provider, WhatsApp number, and Telegram contact details when provided.",
       "Marketplace request information, including console listing selected, app name, package name, pricing type, draft access email, transfer details, payment status, request notes, and timestamps.",
       "Operational information, including admin updates, support communications, payment references, fraud prevention signals, and technical logs required to operate the service.",
     ],

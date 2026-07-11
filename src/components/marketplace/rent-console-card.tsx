@@ -14,6 +14,8 @@ type RentConsoleCardProps = {
   consoleItem: RentConsole;
   isLoggedIn: boolean;
   initialWhatsappNumber?: string | null;
+  initialTelegramUsername?: string | null;
+  initialTelegramNumber?: string | null;
   transferAppOptions?: Array<{ appName: string; packageName: string }>;
 };
 
@@ -49,6 +51,8 @@ export function RentConsoleCard({
   consoleItem,
   isLoggedIn,
   initialWhatsappNumber,
+  initialTelegramUsername,
+  initialTelegramNumber,
   transferAppOptions = [],
 }: RentConsoleCardProps) {
   const showCents = consoleItem.show_price_cents;
@@ -67,7 +71,19 @@ export function RentConsoleCard({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h2 className="font-lilita break-words text-3xl leading-none tracking-normal sm:text-4xl">
-              {consoleItem.name}
+              {consoleItem.highlight_marker_color ? (
+                <span
+                  className="-mx-1 box-decoration-clone rounded-full px-1"
+                  style={{
+                    WebkitBoxDecorationBreak: "clone",
+                    backgroundImage: `linear-gradient(to bottom, transparent 48%, ${consoleItem.highlight_marker_color} 48%, ${consoleItem.highlight_marker_color} 82%, transparent 82%)`,
+                  }}
+                >
+                  {consoleItem.name}
+                </span>
+              ) : (
+                consoleItem.name
+              )}
             </h2>
             <p className="mt-2 text-sm text-black/55">
               {consoleItem.country_code} Console • Created{" "}
@@ -151,12 +167,16 @@ export function RentConsoleCard({
             consoleName={consoleItem.name}
             isLoggedIn={isLoggedIn}
             initialWhatsappNumber={initialWhatsappNumber}
+            initialTelegramUsername={initialTelegramUsername}
+            initialTelegramNumber={initialTelegramNumber}
           />
           <TransferRequestDialog
             rentConsoleId={consoleItem.id}
             consoleName={consoleItem.name}
             isLoggedIn={isLoggedIn}
             initialWhatsappNumber={initialWhatsappNumber}
+            initialTelegramUsername={initialTelegramUsername}
+            initialTelegramNumber={initialTelegramNumber}
             appOptions={transferAppOptions}
           />
           <a

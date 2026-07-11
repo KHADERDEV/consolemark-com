@@ -6,12 +6,14 @@ import { getAdminSession } from "@/lib/admin/auth";
 import {
   createAdminRentRequest,
   rentRequestFormSchema,
-  updateUserWhatsapp,
+  toContactMethods,
+  updateUserContactMethods,
 } from "@/lib/rent-requests";
 
-const adminCreateRentRequestSchema = rentRequestFormSchema.extend({
-  user_id: z.uuid(),
-});
+const adminCreateRentRequestSchema = z.intersection(
+  z.object({ user_id: z.uuid() }),
+  rentRequestFormSchema,
+);
 
 export async function POST(request: NextRequest) {
   const admin = await getAdminSession();
@@ -32,6 +34,8 @@ export async function POST(request: NextRequest) {
     pricing_type: formData.get("pricing_type"),
     gmail: formData.get("gmail"),
     whatsapp_number: formData.get("whatsapp_number"),
+    telegram_username: formData.get("telegram_username"),
+    telegram_number: formData.get("telegram_number"),
   });
 
   if (!parsed.success) {
@@ -40,6 +44,8 @@ export async function POST(request: NextRequest) {
       { status: 303 },
     );
   }
+
+  const contactMethods = toContactMethods(parsed.data);
 
   try {
     await createAdminRentRequest({
@@ -50,7 +56,7 @@ export async function POST(request: NextRequest) {
       submissionType: parsed.data.submission_type,
       pricingType: parsed.data.pricing_type,
       gmail: parsed.data.gmail,
-      whatsappNumber: parsed.data.whatsapp_number,
+      ...contactMethods,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
@@ -72,7 +78,7 @@ export async function POST(request: NextRequest) {
     throw error;
   }
 
-  await updateUserWhatsapp(parsed.data.user_id, parsed.data.whatsapp_number);
+  await updateUserContactMethods(parsed.data.user_id, contactMethods);
   revalidatePath("/admin/rent-orders");
   revalidatePath("/my-rentals");
 

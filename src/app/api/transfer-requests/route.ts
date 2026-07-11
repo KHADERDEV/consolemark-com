@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 
 import { sendTransferRequestEmail } from "@/lib/email/resend";
 import { getPublishedRentConsoles } from "@/lib/rent-consoles";
-import { getUserProfile, updateUserWhatsapp } from "@/lib/rent-requests";
+import {
+  getUserProfile,
+  toContactMethods,
+  updateUserContactMethods,
+} from "@/lib/rent-requests";
 import { createClient } from "@/lib/supabase/server";
 import {
   createTransferRequest,
@@ -31,6 +35,8 @@ export async function POST(request: Request) {
     transaction_id: formData.get("transaction_id"),
     package_names: formData.getAll("package_names"),
     whatsapp_number: formData.get("whatsapp_number"),
+    telegram_username: formData.get("telegram_username"),
+    telegram_number: formData.get("telegram_number"),
   });
 
   if (!parsed.success) {
@@ -103,6 +109,7 @@ export async function POST(request: Request) {
     );
   }
 
+  const contactMethods = toContactMethods(parsed.data);
   const transferRequest = await createTransferRequest({
     userId: user.id,
     rentConsoleId: parsed.data.rent_console_id,
@@ -110,10 +117,10 @@ export async function POST(request: Request) {
     transactionId: parsed.data.transaction_id,
     appNames: selectedAppNames,
     packageNames: selectedPackages,
-    whatsappNumber: parsed.data.whatsapp_number,
+    ...contactMethods,
   });
 
-  await updateUserWhatsapp(user.id, parsed.data.whatsapp_number);
+  await updateUserContactMethods(user.id, contactMethods);
 
   await sendTransferRequestEmail({
     requestCode: transferRequest.request_code,
@@ -121,7 +128,7 @@ export async function POST(request: Request) {
     transactionId: parsed.data.transaction_id,
     appNames: selectedAppNames,
     packageNames: selectedPackages,
-    whatsappNumber: parsed.data.whatsapp_number,
+    ...contactMethods,
     userEmail: profile?.email ?? user.email ?? undefined,
     consoleName: consoleItem.name,
     consoleUrl: consoleItem.console_url,

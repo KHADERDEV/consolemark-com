@@ -13,6 +13,7 @@ const navItems = [
   { href: "/admin/transfer-orders", label: "Transfer Orders" },
   { href: "/admin/payments", label: "Payments" },
   { href: "/admin/crypto-wallets", label: "Crypto Wallets" },
+  { href: "/admin/feedbacks", label: "Feedbacks" },
 ];
 
 export function AdminNav() {
