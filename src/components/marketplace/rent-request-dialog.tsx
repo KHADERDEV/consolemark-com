@@ -13,6 +13,7 @@ type RentRequestDialogProps = {
   initialWhatsappNumber?: string | null;
   initialTelegramUsername?: string | null;
   initialTelegramNumber?: string | null;
+  initialDraftAccessEmail?: string | null;
 };
 
 type SubmissionState = "idle" | "pending" | "success" | "error";
@@ -27,6 +28,7 @@ export function RentRequestDialog({
   initialWhatsappNumber,
   initialTelegramUsername,
   initialTelegramNumber,
+  initialDraftAccessEmail,
 }: RentRequestDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
@@ -186,10 +188,19 @@ export function RentRequestDialog({
                         name="gmail"
                         type="email"
                         required
+                        defaultValue={initialDraftAccessEmail ?? ""}
                         className={fieldClassName}
                         placeholder="name@example.com"
                       />
                     </FieldLabel>
+                    <label className="flex items-start gap-3 rounded-[20px] border border-black/10 bg-neutral-50 px-4 py-3 text-sm leading-5 text-black/65">
+                      <input
+                        type="checkbox"
+                        name="save_draft_access_email"
+                        className="mt-0.5 h-4 w-4 accent-black"
+                      />
+                      <span>Save this email for future rent requests.</span>
+                    </label>
 
                     <div className="rounded-[20px] bg-neutral-50 p-4 text-sm leading-6 text-black/65">
                       Do you want us to publish your app/game for you? Please

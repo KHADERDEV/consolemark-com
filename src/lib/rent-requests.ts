@@ -69,6 +69,7 @@ export type RentRequest = {
     whatsapp_number: string | null;
     telegram_username: string | null;
     telegram_number: string | null;
+    draft_access_email: string | null;
     is_trusted: boolean;
     is_blocked: boolean;
   };
@@ -365,6 +366,23 @@ export async function updateUserWhatsapp(
   });
 }
 
+export async function updateUserDraftAccessEmail(
+  userId: string,
+  draftAccessEmail: string,
+) {
+  await supabaseRest("user_profiles", {
+    method: "POST",
+    query: {
+      on_conflict: "id",
+    },
+    prefer: "resolution=merge-duplicates,return=minimal",
+    body: {
+      id: userId,
+      draft_access_email: draftAccessEmail,
+    },
+  });
+}
+
 export async function getUserProfile(userId: string) {
   const rows = await supabaseRest<
     Array<{
@@ -375,13 +393,14 @@ export async function getUserProfile(userId: string) {
       whatsapp_number: string | null;
       telegram_username: string | null;
       telegram_number: string | null;
+      draft_access_email: string | null;
       is_trusted: boolean;
       is_blocked: boolean;
     }>
   >("user_profiles", {
     query: {
       select:
-        "id,email,display_name,avatar_url,whatsapp_number,telegram_username,telegram_number,is_trusted,is_blocked",
+        "id,email,display_name,avatar_url,whatsapp_number,telegram_username,telegram_number,draft_access_email,is_trusted,is_blocked",
       id: `eq.${userId}`,
       limit: "1",
     },

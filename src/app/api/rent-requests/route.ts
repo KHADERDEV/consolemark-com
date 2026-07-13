@@ -8,6 +8,7 @@ import {
   rentRequestFormSchema,
   toContactMethods,
   updateUserContactMethods,
+  updateUserDraftAccessEmail,
 } from "@/lib/rent-requests";
 import { createClient } from "@/lib/supabase/server";
 
@@ -99,6 +100,9 @@ export async function POST(request: Request) {
   }
 
   await updateUserContactMethods(user.id, contactMethods);
+  if (formData.get("save_draft_access_email") === "on") {
+    await updateUserDraftAccessEmail(user.id, parsed.data.gmail);
+  }
 
   await sendRentRequestEmail({
     requestCode: rentRequest.request_code,

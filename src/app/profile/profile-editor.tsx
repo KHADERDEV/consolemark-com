@@ -148,7 +148,7 @@ export function ProfileEditor({
                 onChange={(event) => setWhatsappNumber(event.target.value)}
                 pattern="^\+[1-9]\d{7,18}$"
                 className="h-12 rounded-full border border-black/15 bg-white px-5 outline-none transition focus:border-black"
-                placeholder="+447520603830"
+                placeholder="+32465272955"
               />
             </label>
 
@@ -171,7 +171,7 @@ export function ProfileEditor({
                 onChange={(event) => setTelegramNumber(event.target.value)}
                 pattern="^\+[1-9]\d{7,18}$"
                 className="h-12 rounded-full border border-black/15 bg-white px-5 outline-none transition focus:border-black"
-                placeholder="+447520603830"
+                placeholder="+32465272955"
               />
             </label>
 

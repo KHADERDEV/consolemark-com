@@ -162,7 +162,7 @@ function AddRentRequestForm({
           />
           <input
             name="whatsapp_number"
-            placeholder="WhatsApp number, e.g. +447520603830"
+            placeholder="WhatsApp number, e.g. +32465272955"
             className="h-12 rounded-full border border-black/15 bg-white px-4 outline-none"
           />
           <input
@@ -172,7 +172,7 @@ function AddRentRequestForm({
           />
           <input
             name="telegram_number"
-            placeholder="Telegram number, e.g. +447520603830"
+            placeholder="Telegram number, e.g. +32465272955"
             className="h-12 rounded-full border border-black/15 bg-white px-4 outline-none"
           />
         </div>

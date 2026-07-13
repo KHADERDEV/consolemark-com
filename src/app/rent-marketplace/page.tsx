@@ -171,6 +171,7 @@ export default async function RentMarketplacePage({
                     initialWhatsappNumber={profile?.whatsapp_number}
                     initialTelegramUsername={profile?.telegram_username}
                     initialTelegramNumber={profile?.telegram_number}
+                    initialDraftAccessEmail={profile?.draft_access_email}
                     transferAppOptions={transferApps
                       .filter((app) => app.rent_console_id === consoleItem.id)
                       .map((app) => ({

@@ -26,8 +26,8 @@ export const siteConfig = {
     address:
       "ConsoleMark.com. 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom.",
     whatsapp: {
-      phone: "+447520603830",
-      qrLink: "https://wa.me/qr/R7R262ZNSCZHL1",
+      phone: "+32465272955",
+      qrLink: "https://wa.me/message/EMUGYLZGZ64XJ1",
     },
     email: "support@consolemark.com",
     telegram: {

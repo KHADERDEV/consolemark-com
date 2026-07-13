@@ -23,7 +23,7 @@ const contactOptions: Array<{
     id: "whatsapp",
     label: "WhatsApp number",
     name: "whatsapp_number",
-    placeholder: "+447520603830",
+    placeholder: "+32465272955",
     pattern: "^\\+[1-9]\\d{7,18}$",
   },
   {
@@ -36,7 +36,7 @@ const contactOptions: Array<{
     id: "telegramNumber",
     label: "Telegram number",
     name: "telegram_number",
-    placeholder: "+447520603830",
+    placeholder: "+32465272955",
     pattern: "^\\+[1-9]\\d{7,18}$",
   },
 ];

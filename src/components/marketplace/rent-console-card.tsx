@@ -16,6 +16,7 @@ type RentConsoleCardProps = {
   initialWhatsappNumber?: string | null;
   initialTelegramUsername?: string | null;
   initialTelegramNumber?: string | null;
+  initialDraftAccessEmail?: string | null;
   transferAppOptions?: Array<{ appName: string; packageName: string }>;
 };
 
@@ -53,6 +54,7 @@ export function RentConsoleCard({
   initialWhatsappNumber,
   initialTelegramUsername,
   initialTelegramNumber,
+  initialDraftAccessEmail,
   transferAppOptions = [],
 }: RentConsoleCardProps) {
   const showCents = consoleItem.show_price_cents;
@@ -169,6 +171,7 @@ export function RentConsoleCard({
             initialWhatsappNumber={initialWhatsappNumber}
             initialTelegramUsername={initialTelegramUsername}
             initialTelegramNumber={initialTelegramNumber}
+            initialDraftAccessEmail={initialDraftAccessEmail}
           />
           <TransferRequestDialog
             rentConsoleId={consoleItem.id}
