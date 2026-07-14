@@ -8,11 +8,10 @@ import { CopyValueButton } from "@/components/ui/copy-value-button";
 import { siteConfig } from "@/config/site";
 
 type SocialLink = {
-  label: "Telegram" | "WhatsApp" | "Email" | "Facebook";
+  label: "Telegram" | "WhatsApp" | "Email";
   href?: string;
   image?: string;
   action?: "telegram" | "whatsapp";
-  icon?: "facebook";
 };
 
 const socialLinks: SocialLink[] = [
@@ -29,11 +28,6 @@ const socialLinks: SocialLink[] = [
   {
     label: "Email",
     href: siteConfig.links.email,
-  },
-  {
-    label: "Facebook",
-    href: siteConfig.links.facebook,
-    icon: "facebook",
   },
 ];
 
@@ -68,7 +62,7 @@ export function FooterSocialLinks() {
               aria-label={social.label}
               className="group flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-white transition-colors hover:border-[#00e5ff] hover:bg-[#00e5ff]"
             >
-              <SocialIcon image={social.image} icon={social.icon} />
+              <SocialIcon image={social.image} />
             </a>
           ),
         )}
@@ -181,22 +175,9 @@ export function FooterSocialLinks() {
 
 function SocialIcon({
   image,
-  icon,
 }: {
   image?: string;
-  icon?: SocialLink["icon"];
 }) {
-  if (icon === "facebook") {
-    return (
-      <span
-        className="font-lilita text-2xl leading-none text-white transition-colors group-hover:text-black"
-        aria-hidden="true"
-      >
-        f
-      </span>
-    );
-  }
-
   if (!image) {
     return (
       <Mail
